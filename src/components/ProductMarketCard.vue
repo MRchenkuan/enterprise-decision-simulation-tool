@@ -1,43 +1,48 @@
 <script setup>
 import { ref } from 'vue'
+import { formatAsPercentage, parsePercentage, roundToDecimal } from '../tools';
 
 const props = defineProps({
   config: Object,
-  readOnly:Boolean,
+  readonly:Boolean,
   unit:String,
-  colored:Boolean,
+  colored:{
+    type: String,
+    default: ""
+  },
   type:String,
-  collect:Array
+  extra:Array,
+  places:Number
 })
 
 // 定义一个响应式引用来存储输入框的值
 const percentage = ref('');
 
-// 格式化函数，将数值转换为带有百分号的字符串
-function formatAsPercentage(value) {
-  if (value === '' || value === null) {
-    return value;
-  }
-  return (value * 100) + '%';
-}
 
-// 解析函数，将带有百分号的字符串解析为数值
-function parsePercentage(value) {
-  if (value === '' || value === null) {
-    return value;
-  }
-  const parsedValue = value.replace('%', '');
-  return parsedValue ? parseFloat(parsedValue) / 100 : 0;
-}
 const formater = props.unit==='%' ? formatAsPercentage:null;
 const parser = props.unit==='%' ? parsePercentage:null;
 
-
+function roundPercent(v){
+  return props.unit==='%' ? roundToDecimal(v*100, props.places)+'%': roundToDecimal(v,props.places);
+}
+const colored = props.colored;
+function colorClass(v){
+  if(colored ==='bad'){
+    return 'bad'
+  }
+  if(colored ==='good'){
+    return 'good'
+  }
+  return props.colored ? {
+    'good':v>0,
+    'bad':v<0,
+  }:null
+}
 
 </script>
 
 <template>
-  <div v-if="readOnly">
+  <div v-if="readonly" class="readonly">
     <div class="line">
       <el-text class="linetitle" size="small"></el-text>
       <template v-if="type==='produce'">
@@ -52,39 +57,39 @@ const parser = props.unit==='%' ? parsePercentage:null;
         <el-text size="small" class="cell4">市场3</el-text>
         <el-text size="small" class="cell4">市场4</el-text>
       </template>
-      <el-text v-if="collect" size="small" class="cell4">汇总</el-text>
+      <el-text v-if="extra" size="small" class="cell4">汇总</el-text>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品A</el-text>
-      <div class="cell4"><el-text size="small" :class="{'good':config.A[0]>0,'bad':config.A[0]<0}">{{ config.A[0] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.A[1]>0,'bad':config.A[1]<0}">{{ config.A[1] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.A[2]>0,'bad':config.A[2]<0}">{{ config.A[2] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.A[3]>0,'bad':config.A[3]<0}">{{ config.A[3] }}</el-text></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[0]>0,'bad':collect[0]<0}">{{ collect[0] }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.A[0])">{{ roundPercent(config.A[0]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.A[1])">{{ roundPercent(config.A[1]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.A[2])">{{ roundPercent(config.A[2]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.A[3])">{{ roundPercent(config.A[3]) }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra[0])">{{ roundPercent(extra[0]) }}</el-text></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品B</el-text>
-      <div class="cell4"><el-text size="small" :class="{'good':config.B[0]>0,'bad':config.B[0]<0}">{{ config.B[0] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.B[1]>0,'bad':config.B[1]<0}">{{ config.B[1] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.B[2]>0,'bad':config.B[2]<0}">{{ config.B[2] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.B[3]>0,'bad':config.B[3]<0}">{{ config.B[3] }}</el-text></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[1]>0,'bad':collect[1]<0}">{{ collect[1] }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.B[0])">{{ roundPercent(config.B[0]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.B[1])">{{ roundPercent(config.B[1]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.B[2])">{{ roundPercent(config.B[2]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.B[3])">{{ roundPercent(config.B[3]) }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra[1])">{{ roundPercent(extra[1]) }}</el-text></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品C</el-text>
-      <div class="cell4"><el-text size="small" :class="{'good':config.C[0]>0,'bad':config.C[0]<0}">{{ config.C[0] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.C[1]>0,'bad':config.C[1]<0}">{{ config.C[1] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.C[2]>0,'bad':config.C[2]<0}">{{ config.C[2] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.C[3]>0,'bad':config.C[3]<0}">{{ config.C[3] }}</el-text></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[2]>0,'bad':collect[2]<0}">{{ collect[2] }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.C[0])">{{ roundPercent(config.C[0]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.C[1])">{{ roundPercent(config.C[1]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.C[2])">{{ roundPercent(config.C[2]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.C[3])">{{ roundPercent(config.C[3]) }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra[2])">{{ roundPercent(extra[2]) }}</el-text></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品D</el-text>
-      <div class="cell4"><el-text size="small" :class="{'good':config.D[0]>0,'bad':config.C[0]<0}">{{ config.D[0] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.D[1]>0,'bad':config.C[1]<0}">{{ config.D[1] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.D[2]>0,'bad':config.C[2]<0}">{{ config.D[2] }}</el-text></div>
-      <div class="cell4"><el-text size="small" :class="{'good':config.D[3]>0,'bad':config.C[3]<0}">{{ config.D[3] }}</el-text></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[3]>0,'bad':collect[3]<0}">{{ collect[3] }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.D[0])">{{ roundPercent(config.D[0]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.D[1])">{{ roundPercent(config.D[1]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.D[2])">{{ roundPercent(config.D[2]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(config.D[3])">{{ roundPercent(config.D[3]) }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra[3])">{{ roundPercent(extra[3]) }}</el-text></div>
     </div>
   </div>
   <div v-else>
@@ -102,7 +107,7 @@ const parser = props.unit==='%' ? parsePercentage:null;
         <el-text size="small" class="cell4">市场3</el-text>
         <el-text size="small" class="cell4">市场4</el-text>
       </template>
-      <el-text v-if="collect" size="small" class="cell4">汇总</el-text>
+      <el-text v-if="extra" size="small" class="cell4">汇总</el-text>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品A</el-text>
@@ -110,7 +115,7 @@ const parser = props.unit==='%' ? parsePercentage:null;
       <div class="cell4"><el-input v-model="config.A[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.A[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.A[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[0]>0,'bad':collect[0]<0}">{{ collect[0] }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-input v-model="extra[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品B</el-text>
@@ -118,7 +123,7 @@ const parser = props.unit==='%' ? parsePercentage:null;
       <div class="cell4"><el-input v-model="config.B[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.B[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.B[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[1]>0,'bad':collect[1]<0}">{{ collect[1] }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-input v-model="extra[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品C</el-text>
@@ -126,7 +131,7 @@ const parser = props.unit==='%' ? parsePercentage:null;
       <div class="cell4"><el-input v-model="config.C[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.C[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.C[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[2]>0,'bad':collect[2]<0}">{{ collect[2] }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-input v-model="extra[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
 
     </div>
     <div class="line">
@@ -135,12 +140,16 @@ const parser = props.unit==='%' ? parsePercentage:null;
       <div class="cell4"><el-input v-model="config.D[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.D[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.D[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
-      <div v-if="collect" class="cell4"><el-text size="small" :class="{'good':collect[3]>0,'bad':collect[3]<0}">{{ collect[3] }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-input v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.readonly{
+  /* background: #eeeeee; */
+  font-weight: 900;
+}
 .good{
   color: #67C23A;
 }
@@ -174,7 +183,7 @@ const parser = props.unit==='%' ? parsePercentage:null;
 
 
 .line>.linetitle{
-  width: 40px;
+  width: 60px;
   margin: 0 18px 0 0 ;
   text-align: right;    
 }

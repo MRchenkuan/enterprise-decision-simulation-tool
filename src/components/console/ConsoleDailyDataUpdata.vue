@@ -1,33 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import ProductMarketCard from './ProductMarketCard.vue';
+import ProductMarketCard from '../ProductMarketCard.vue';
 defineProps({
-  config: Object,
+  data: Object,
 })
 const dailyDataPanelActive = ref('销量&市场份额');
+import {laborCount,machineCount } from '../../globalState.js'
 
-const currentData = ref({
-  mySaleCount:{
-    A:[150,150,0,0],
-    B:[96, 96,132,132],
-    C:[0, 0,0,0],
-    D:[0, 0,0,0],
-  },
-  chanpionSaleCount:{
-    A:[150,150,0,0],
-    B:[96, 96,132,132],
-    C:[0, 0,0,0],
-    D:[0, 0,0,0],
-  },
-  chanpionMarketRate:{
-    A:[.5,.5,0,0],
-    B:[.9, .6,.6,.85],
-    C:[0, 0,0,0],
-    D:[0, 0,0,0],
-  }
-})
-
-const historyData = ref([]);
 </script>
 
 <template>
@@ -45,26 +24,47 @@ const historyData = ref([]);
         <el-text size="small" class="notupdate">(未更新)</el-text>
       </template>
       <el-divider content-position="left"><el-text size="small">我的销量</el-text></el-divider>
-      <product-market-card :config="currentData.mySaleCount"/>
+      <product-market-card :config="data.mySaleCount"/>
       <el-divider content-position="left"><el-text size="small">第一名的销量</el-text></el-divider>
-      <product-market-card :config="currentData.chanpionSaleCount"/>     
+      <product-market-card :config="data.chanpionSaleCount"/>     
       <el-divider content-position="left"><el-text size="small">第一名的市占</el-text></el-divider>
-      <product-market-card unit="%" :config="currentData.chanpionMarketRate"/>
+      <product-market-card unit="%" :config="data.chanpionMarketRate"/>
     </el-tab-pane>
     <el-tab-pane name="需求&存订货">
       <template #label>
         <el-text size="small">需求&存订货</el-text>
         <el-text size="small" class="updated">(已更新)</el-text>
       </template>
+      <el-divider content-position="left"><el-text size="small">生产力水平</el-text></el-divider>
+      <div class="line">
+        <el-text class="linetitle cell" size="small">可用工人数</el-text>
+        <el-input v-model="laborCount" size="small" class="input cell" />
+      </div>
+      <div class="line">
+        <el-text class="cell linetitle" size="small">可用机器数</el-text>
+        <el-input v-model="machineCount" size="small" class="input cell" />
+      </div>
       <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
-      <product-market-card :config="currentData.chanpionSaleCount"/>
-      <el-divider content-position="left"><el-text size="small">市场上的存订货</el-text></el-divider>
-      <product-market-card :config="currentData.chanpionSaleCount"/>
+      <product-market-card :config="data.myMarketRequirement"/>
+      <el-divider content-position="left"><el-text size="small">市场上的存&订货（存货用负值）</el-text></el-divider>
+      <product-market-card :config="data.myOrder"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <style scoped>
+.line{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 5px 0;
+}
+.linetitle{
+  width: 85px;
+}
+.input{
+  width: 85px;
+}
 .header{
   display: flex;
   justify-content: flex-end;

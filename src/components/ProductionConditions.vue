@@ -96,7 +96,7 @@ defineProps({
 
 
 .line>.linetitle{
-  width: 120px;
+  width: 130px;
   margin: 0 18px 0 0 ;
   text-align: right;    
 }
