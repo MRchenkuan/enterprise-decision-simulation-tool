@@ -18,7 +18,7 @@ export const B = ref({
   materialCost:800,
   machineCost:320,
   laborCost:280,
-  hourPay: [11,14,13,17],
+  hourPay: [11,14,12,17],
   hourRemain:[520,260,520,260],
   machinePay:7.65
 })

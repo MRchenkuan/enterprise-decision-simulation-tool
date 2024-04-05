@@ -230,3 +230,29 @@ export function sumProduct(arr1, arr2) {
     throw new Error('数组类型不匹配');
   }
 }
+
+export function sumColumns(matrix) {
+  var result = [0, 0, 0, 0];
+
+  for (var i = 0; i < matrix.length; i++) {
+      for (var j = 0; j < matrix[i].length; j++) {
+          result[j] += matrix[i][j];
+      }
+  }
+
+  return result;
+}
+
+export function sumRows(matrix) {
+  var result = [];
+
+  for (var i = 0; i < matrix.length; i++) {
+      var rowSum = 0;
+      for (var j = 0; j < matrix[i].length; j++) {
+          rowSum += matrix[i][j];
+      }
+      result.push(rowSum);
+  }
+
+  return result;
+}
