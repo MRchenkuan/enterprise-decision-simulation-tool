@@ -170,3 +170,4 @@ watchEffect(()=>{
 export const laborCount = ref(0);
 // 最大机器数
 export const machineCount = ref(0);
+

@@ -17,11 +17,13 @@ import {laborCount,machineCount } from '../../globalState.js'
     </div>
   </div>
   
-  <el-tabs v-model="dailyDataPanelActive">
+  <el-tabs  :stretch="true" v-model="dailyDataPanelActive">
     <el-tab-pane name="销量&市场份额">
       <template #label>
-        <el-text size="small">销量&市场份额</el-text>
-        <el-text size="small" class="notupdate">(未更新)</el-text>
+        <div class="tabtag">
+          <el-text size="small">市场情况</el-text>
+          <el-text size="small" class="notupdate">(未更新)</el-text>
+        </div>
       </template>
       <el-divider content-position="left"><el-text size="small">我的销量</el-text></el-divider>
       <product-market-card :config="data.mySaleCount"/>
@@ -32,8 +34,22 @@ import {laborCount,machineCount } from '../../globalState.js'
     </el-tab-pane>
     <el-tab-pane name="需求&存订货">
       <template #label>
-        <el-text size="small">需求&存订货</el-text>
-        <el-text size="small" class="updated">(已更新)</el-text>
+        <div class="tabtag">
+          <el-text size="small">我的情况</el-text>
+          <el-text size="small" class="updated">(已更新)</el-text>
+        </div>
+      </template>
+      <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
+      <product-market-card :config="data.myMarketRequirement"/>
+      <el-divider content-position="left"><el-text size="small">市场上的存&订货（存货用负值）</el-text></el-divider>
+      <product-market-card :config="data.myOrder"/>
+    </el-tab-pane>
+    <el-tab-pane name="生产力">
+      <template #label>
+        <div class="tabtag">
+          <el-text size="small">生产力</el-text>
+          <el-text size="small" class="updated">(已更新)</el-text>
+        </div>
       </template>
       <el-divider content-position="left"><el-text size="small">生产力水平</el-text></el-divider>
       <div class="line">
@@ -44,15 +60,17 @@ import {laborCount,machineCount } from '../../globalState.js'
         <el-text class="cell linetitle" size="small">可用机器数</el-text>
         <el-input v-model="machineCount" size="small" class="input cell" />
       </div>
-      <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
-      <product-market-card :config="data.myMarketRequirement"/>
-      <el-divider content-position="left"><el-text size="small">市场上的存&订货（存货用负值）</el-text></el-divider>
-      <product-market-card :config="data.myOrder"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <style scoped>
+.tabtag{
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  align-items: center;
+}
 .line{
   display: flex;
   justify-content: flex-start;
@@ -69,7 +87,7 @@ import {laborCount,machineCount } from '../../globalState.js'
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin: 10px 0 0 0;
+  margin: 10px 0;
 }
 
 el-text{
