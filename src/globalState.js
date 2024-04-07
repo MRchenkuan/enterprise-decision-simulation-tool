@@ -1,12 +1,13 @@
 import { ref, watchEffect } from 'vue';
 import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber} from './tools.js'
 
+
 export const A = ref({
   manageCost:[5000, 6000],
   hours:[8,4,8,4],
   materialCost:700,
-  machineCost:160,
-  laborCost:240,
+  machineCost:100,
+  laborCost:200,
   hourPay: [11,14,13,17],
   hourRemain:[520,260,520,260],
   machinePay:7.65
@@ -15,10 +16,10 @@ export const A = ref({
 export const B = ref({
   manageCost:[6000, 7000],
   hours:[8,4,8,4],
-  materialCost:800,
-  machineCost:320,
-  laborCost:280,
-  hourPay: [11,14,12,17],
+  materialCost:1200,
+  machineCost:160,
+  laborCost:250,
+  hourPay: [11,14,13,17],
   hourRemain:[520,260,520,260],
   machinePay:7.65
 })
@@ -26,20 +27,20 @@ export const B = ref({
 export const C = ref({
   manageCost:[7000, 8000],
   hours:[8,4,8,4],
-  materialCost:900,
-  machineCost:480,
-  laborCost:320,
+  materialCost:1800,
+  machineCost:450,
+  laborCost:280,
   hourPay: [11,14,13,17],
   hourRemain:[520,260,520,260],
   machinePay:7.65
 })
 
 export const D = ref({
-  manageCost:[9000, 10000],
+  manageCost:[8000, 9000],
   hours:[8,4,8,4],
-  materialCost:1000,
-  machineCost:600,
-  laborCost:410,
+  materialCost:3200,
+  machineCost:640,
+  laborCost:320,
   hourPay: [11,14,13,17],
   hourRemain:[520,260,520,260],
   machinePay:7.65
@@ -52,11 +53,16 @@ export const MY_PRICES = ref({
   D:[4500, 4500,4500,4500],
 })
 
-export const TRANSPORTATION_PLAN = ref(0)
+export const TRANSPORTATION_PLAN = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 
-export const PRODUCTIONPLAN = ref({
-  A:[150,150,0,0],
-  B:[96, 96,132,132],
+export const PRODUCTION_PLAN = ref({
+  A:[320,160,0,0],
+  B:[200, 100,0,0],
   C:[0, 0,0,0],
   D:[0, 0,0,0],
 })
@@ -77,6 +83,14 @@ export const TRANSPORTATION_COST_DYNAMIC = ref({
   D:[900, 700,1000,1000],
 })
 
+//我的净需求
+export const REQUIREMENT_NET = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+
 // 周期配置
 export const PERIOD_DATA = ref({
   myOrder:{
@@ -86,10 +100,10 @@ export const PERIOD_DATA = ref({
     D:[0, 0,0,0],
   },
   myMarketRequirement:{
-    A:[150,150,0,0],
+    A:[150,150,30,30],
     B:[96, 96,132,132],
-    C:[-30, -30,-30,30],
-    D:[-30, -30,-30,-20],
+    C:[10, 10,10,10],
+    D:[10, 10,10,10],
   },
   mySaleCount:{
     A:[150,150,0,0],
@@ -134,14 +148,18 @@ watchEffect(()=>{
   MARKET_SHARE_MY.value = divideMatrix(mySaleCount, MARKET_CAPACITY.value);
 })
 
+watchEffect(()=>{
+  REQUIREMENT_NET.value = plusMatrix(myOrder, myMarketRequirement);
+})
+
 
 watchEffect(()=>{
-  // 计算各个车间单件成本
+  // 计算各个车间成产成本
   COST_PRODUCE.value={
-    A: produceCostCalc(A.value, PRODUCTIONPLAN.value.A),
-    B: produceCostCalc(B.value, PRODUCTIONPLAN.value.B),
-    C: produceCostCalc(C.value, PRODUCTIONPLAN.value.C),
-    D: produceCostCalc(D.value, PRODUCTIONPLAN.value.D),
+    A: produceCostCalc(A.value, PRODUCTION_PLAN.value.A),
+    B: produceCostCalc(B.value, PRODUCTION_PLAN.value.B),
+    C: produceCostCalc(C.value, PRODUCTION_PLAN.value.C),
+    D: produceCostCalc(D.value, PRODUCTION_PLAN.value.D),
   }
   
   // 计算平均成本
@@ -167,7 +185,6 @@ watchEffect(()=>{
   MIN_DELIVERY_COUNT.value = divideMatrix(TRANSPORTATION_COST_FIXED.value, processMatrix(minFee,(it=>it>=0?it:0)))
 })
 // 最大人工数
-export const laborCount = ref(0);
+export const laborCount = ref(220.75);
 // 最大机器数
-export const machineCount = ref(0);
-
+export const machineCount = ref(124);

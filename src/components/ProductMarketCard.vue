@@ -12,6 +12,7 @@ const props = defineProps({
   },
   type:String,
   extra:Array,
+  extra2:Array,
   places:Number
 })
 
@@ -91,6 +92,14 @@ function colorClass(v){
       <div class="cell4"><el-text size="small" :class="colorClass(config.D[3])">{{ roundPercent(config.D[3]) }}</el-text></div>
       <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra[3])">{{ roundPercent(extra[3]) }}</el-text></div>
     </div>
+    <div class="line" v-if="extra2">
+      <el-text class="linetitle" size="small">汇总</el-text>
+      <div class="cell4"><el-text size="small" :class="colorClass(extra2[0])">{{ roundPercent(extra2[0]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(extra2[1])">{{ roundPercent(extra2[1]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(extra2[2])">{{ roundPercent(extra2[2]) }}</el-text></div>
+      <div class="cell4"><el-text size="small" :class="colorClass(extra2[3])">{{ roundPercent(extra2[3]) }}</el-text></div>
+      <div v-if="extra" class="cell4"><el-text size="small" :class="colorClass(extra2[3])">{{ roundPercent(extra2[3]) }}</el-text></div>
+    </div>
   </div>
   <div v-else>
     <div class="line">
@@ -141,6 +150,14 @@ function colorClass(v){
       <div class="cell4"><el-input v-model="config.D[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><el-input v-model="config.D[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra" class="cell4"><el-input v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+    </div>
+    <div class="line" v-if="extra2">
+      <el-text class="linetitle" size="small">产品D</el-text>
+      <div class="cell4"><el-input v-model="extra2[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div class="cell4"><el-input v-model="extra2[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div class="cell4"><el-input v-model="extra2[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div class="cell4"><el-input v-model="extra2[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra" class="cell4"><el-input v-model="extra2[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
   </div>
 </template>

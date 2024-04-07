@@ -1,45 +1,43 @@
 <script setup>
 import { ref, watch, watchEffect, reactive } from 'vue'
-import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes } from '../../tools';
+import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, timesMatrix, sum2DArray, autoUnit } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { minTransportCostRate,MIN_DELIVERY_COUNT, TRANSPORTATION_PLAN , PERIOD_DATA} from '../../globalState';
+import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
-
-const demand = ref([])
+const demand = ref(['mincost'])
 const conditions = ref({})
+const totoleCost = ref(0)
 const plan = ref({
   A:[0,0,0,0],
   B:[0,0,0,0],
   C:[0,0,0,0],
   D:[0,0,0,0],
 })
-watch(demand,(v)=>{
-  conditions.value = {
-    mincost:Object.values(v).indexOf('mincost')>=0,
-    marketdemand:Object.values(v).indexOf('marketdemand')>=0,
-  }
-})
 
 watchEffect(()=>{
+
+  conditions.value = {
+    mincost:Object.values(demand.value).indexOf('mincost')>=0,
+    marketdemand:Object.values(demand.value).indexOf('marketdemand')>=0,
+  }
+
   const {mincost, marketdemand} = conditions.value;
 
-  const netRequirement = plusMatrix(myOrder, myMarketRequirement);
-
   if(mincost && marketdemand){
-    plan.value = processMatrixes(netRequirement,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
+    plan.value = processMatrixes(REQUIREMENT_NET.value,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
       return it1<it2?0:it1
     } )
   } else if(mincost){
     plan.value = MIN_DELIVERY_COUNT.value
   } else if(marketdemand){
-    plan.value = netRequirement
+    plan.value = REQUIREMENT_NET.value
   } else{
     plan.value = processMatrix(myOrder,(it)=>it>=0?it:0);
   }
+  totoleCost.value = autoUnit(sum2DArray(Object.values(plusMatrix(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value),TRANSPORTATION_COST_FIXED.value))))
 })
-
 
 function formattooltip(v){
   return (v*100).toFixed(0)+'%'
@@ -76,17 +74,20 @@ const marks = reactive({
     <el-text class="linetitle" size="small">配送要求</el-text>
     <div class="cell">
       <el-checkbox-group v-model="demand" size="small">
-      <el-checkbox value="mincost" name="mincost">
-        不超过配送费率
-      </el-checkbox>
-      <el-checkbox value="marketdemand" name="marketdemand">
-        不超过市场需求
-      </el-checkbox>
-    </el-checkbox-group>  
+        <el-checkbox value="mincost" name="mincost">
+          不超过配送费率
+        </el-checkbox>
+        <el-checkbox value="marketdemand" name="marketdemand">
+          不超过市场需求
+        </el-checkbox>
+      </el-checkbox-group>  
     </div>
   </div>
-  
   <product-market-card class="table" readonly :config="plan"/>
+  <div class="line bottom">
+    <el-text class="linetitle cell" size="small">总费用:</el-text>
+    <el-text class="warn" size="small"> {{ totoleCost }} </el-text>
+</div>
 </template>
 
 <style scoped>
@@ -99,6 +100,17 @@ const marks = reactive({
   justify-content: flex-start;
   align-items: center;
   box-sizing: border-box;
+}
+.line.bottom{
+  justify-content: flex-end;
+  margin: 5px 0;
+  font-weight: 900;
+}
+.line.bottom .linetitle{
+  margin-right: 5px;
+}
+.warn{
+  color: #F56C6C;
 }
 .line>.linetitle{
   width: 50px;

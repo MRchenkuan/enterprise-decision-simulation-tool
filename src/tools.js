@@ -1,3 +1,5 @@
+import solver from 'javascript-lp-solver'
+
 export function divideMatrix(m1, m2) {
   const _m = {}
   Object.keys(m1).map(key=>{
@@ -255,4 +257,149 @@ export function sumRows(matrix) {
   }
 
   return result;
+}
+
+
+export function sum2DArray(arr) {
+  let totalSum = 0;
+  for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+          totalSum += arr[i][j];
+      }
+  }
+  return totalSum;
+}
+
+export function autoUnit(num) {
+  if (num < 10000) {
+      return num.toString();
+  } else if (num < 100000000) {
+      return (num / 10000).toFixed(1) + "万";
+  } else {
+      return (num / 100000000).toFixed(1) + "亿";
+  }
+}
+
+
+
+export function maximizeXValuesWithLP(r1, r2, r3, r4, maxLR, maxMR) {
+// 待求解的数组
+var variables = {
+  X1: "X1",
+  X2: "X2",
+  X3: "X3",
+  X4: "X4"
+};
+
+
+// 定义变量
+var c1 = "(1+" + r1 + ")*" + variables.X1;
+var c2 = "(1+" + r2 + ")*" + variables.X2;
+var c3 = "(1+" + r3 + ")*" + variables.X3;
+var c4 = "(1+" + r4 + ")*" + variables.X4;
+
+// LR = Max(c1, c2)+Max(c3,c4)
+var LR = "LR";
+var constraints_LR = {
+  "c1": 1,
+  "c2": 1,
+  "c3": 1,
+  "c4": 1
+};
+
+var constraint_LR = {
+  "max": maxLR,
+  "min": 0
+};
+
+// MR = Max(c1, c2+c3, c4)
+var MR = "MR";
+var constraints_MR = {
+  "c1": 1,
+  "c2": 1,
+  "c3": 1,
+  "c4": 1
+};
+
+var constraint_MR = {
+  "max": maxMR,
+  "min": 0
+};
+
+// 定义目标函数
+var objective = {};
+objective[variables.X1] = 1;
+objective[variables.X2] = 1;
+objective[variables.X3] = 1;
+objective[variables.X4] = 1;
+
+// 定义约束
+var constraints = {};
+constraints[variables.X1] = { "min": 0 };
+constraints[variables.X2] = { "min": 0 };
+constraints[variables.X3] = { "min": 0 };
+constraints[variables.X4] = { "min": 0 };
+
+constraints[c1] = { "max": c2 };
+constraints[c3] = { "max": c4 };
+constraints[LR] = constraint_LR;
+constraints[MR] = constraint_MR;
+
+// 定义问题
+var model = {
+  "optimize": "profit",
+  "opType": "linear",
+  "constraints": constraints,
+  "variables": objective
+};
+
+// 求解问题
+  return solver.Solve(model);
+}
+
+// 梯度下降算法
+export function gradientDescent(learningRate, maxIterations, tolerance, h, targetFun) {
+
+  // 数值微分来计算梯度
+  function numericalGradient(x1, x2, x3, x4, h) {
+    const point = targetFun(x1, x2, x3, x4);
+    if(point== 'OVERFLOW')return [0,0,0,0]
+    const d1 = targetFun(x1 + h, x2, x3, x4);
+    const d2 = targetFun(x1, x2 + h, x3, x4);
+    const d3 = targetFun(x1, x2, x3 + h, x4);
+    const d4 = targetFun(x1, x2, x3, x4 + h);
+    //当某一维度到达边界则速度减慢一半反向
+    return [
+      (d1!= 'OVERFLOW')? ((d1-point) / h):-0.75*h,
+      (d2!= 'OVERFLOW')? ((d2-point) / h):-0.75*h,
+      (d3!= 'OVERFLOW')? ((d3-point) / h):-0.75*h,
+      (d4!= 'OVERFLOW')? ((d4-point) / h):-0.75*h
+    ];
+  }
+
+  let x = [0, 0, 0, 0]; // 初始值
+  let iter = 0;
+  while (iter < maxIterations) {
+      let grad = numericalGradient(x[0], x[1], x[2], x[3], h);
+      let prevX = x.slice();
+      for (let i = 0; i < x.length; i++) {
+          x[i] += learningRate * grad[i];
+      }
+      let diff = 0;
+      for (let i = 0; i < x.length; i++) {
+          diff += Math.abs(x[i] - prevX[i]);
+      }
+      if (diff < tolerance) {
+        break;
+      }
+      iter++;
+      console.log(iter+'轮迭代结束:',x)
+  }
+  return x;
+}
+
+export function softMax(a, b) {
+  // 平滑处理Math.max 便于求导
+  // return Math.log(Math.exp(a) + Math.exp(b));
+  return Math.max(a,b)
 }

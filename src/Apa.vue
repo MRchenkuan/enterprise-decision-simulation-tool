@@ -1,6 +1,6 @@
 <script setup>
   
-  import { reactive, ref, watchEffect } from 'vue'
+  import { ref } from 'vue'
   import ProductionConditions from './components/ProductionConditions.vue';
   import ProductMarketCard from './components/ProductMarketCard.vue';
   import ConsoleDailyDataUpdata from './components/console/ConsoleDailyDataUpdata.vue';
@@ -10,10 +10,10 @@
   import ConsolePricePlan from './components/console/ConsolePricePlan.vue';
 
   import {
-    A, 
+    A, B,C,D,
     MY_PRICES, 
     TRANSPORTATION_PLAN,
-    PRODUCTIONPLAN,
+    PRODUCTION_PLAN,
     TRANSPORTATION_COST_FIXED,
     TRANSPORTATION_COST_DYNAMIC,
     PERIOD_DATA,
@@ -25,13 +25,17 @@
     COST_FINAL,
     PROFIT_GROSS,
     PROFIT_GROSS_RATE,
+    REQUIREMENT_NET,
     PROFIT_NET,
     PROFIT_NET_RATE,
-MIN_DELIVERY_COUNT
+    MIN_DELIVERY_COUNT
   } from './globalState';
+import { plusMatrix, sumRows } from './tools';
 
   const activeName = ref('A');
   const configPanelActive = ref('daily');
+  const databoardActive = ref('profit');
+
 
 
 </script>
@@ -46,11 +50,11 @@ MIN_DELIVERY_COUNT
         <el-alert title="一次性配置，根据比赛界信息配置完毕即可" description="" type="warning" :closable="false" show-icon />
 
         <el-divider content-position="left"><el-text size="small">产线配置</el-text></el-divider>
-        <el-tabs type="border-card" v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+        <el-tabs type="border-card" v-model="activeName" class="demo-tabs">
           <el-tab-pane label="产品A" name="A"><production-conditions :config="A"/></el-tab-pane>
-          <el-tab-pane label="产品B" name="B"><production-conditions :config="A"/></el-tab-pane>
-          <el-tab-pane label="产品C" name="C"><production-conditions :config="A"/></el-tab-pane>
-          <el-tab-pane label="产品D" name="D"><production-conditions :config="A"/></el-tab-pane>
+          <el-tab-pane label="产品B" name="B"><production-conditions :config="B"/></el-tab-pane>
+          <el-tab-pane label="产品C" name="C"><production-conditions :config="C"/></el-tab-pane>
+          <el-tab-pane label="产品D" name="D"><production-conditions :config="D"/></el-tab-pane>
         </el-tabs>
 
         <el-divider content-position="left"><el-text size="small">物流固定费 </el-text></el-divider>
@@ -70,21 +74,6 @@ MIN_DELIVERY_COUNT
     </el-tabs>
   </div>
 
-  <div class="market">
-    <el-card class="card">
-      <template #header>
-        <el-text>市场相关</el-text>
-      </template>
-      <el-divider content-position="left"><el-text size="small">市场空间</el-text></el-divider>
-      <product-market-card readonly :places=0 :config="MARKET_CAPACITY"/>
-      <el-divider content-position="left"><el-text size="small">市场规模(单位：{{ MARKET_SCALE.unit }})</el-text></el-divider>
-      <product-market-card readonly :config="MARKET_SCALE.result"/>
-      <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
-      <product-market-card readonly unit="%" :config="MARKET_SHARE_MY"/>
-    </el-card>
-  </div>
-
-
   <div class="console">
     <el-card class="card">
       <template #header>
@@ -98,33 +87,46 @@ MIN_DELIVERY_COUNT
       <console-production-plan/>
     </el-card>
   </div>
-  <div class="dashboard">
-    <el-card class="card">
+
+  <div class="market">
+    <el-tabs v-model="databoardActive" type="border-card" class="card">
       <template #header>
-        <el-text>成本&利润</el-text>
+        <el-text>市场&成本&利润</el-text>
       </template>
-      <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
-      <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored="bad" readonly :config="COST_PRODUCE"/>
-      <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
-      <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
-      <el-divider content-position="left"><el-text size="small">终端利率 </el-text></el-divider>
-      <product-market-card unit="%" colored="auto" readonly :config="PROFIT_NET_RATE"/>
-      <el-divider content-position="left"><el-text size="small">单件毛利 </el-text></el-divider>
-      <product-market-card readonly colored="auto" :config="PROFIT_NET"/>
-    </el-card>
-  </div>
-  <div class="graph">
-    <el-card class="card">
-      <template #header>
-        <el-text>相关图表</el-text>
-      </template>
-      <el-divider content-position="left"><el-text size="small">物流成本曲线</el-text></el-divider>
-      <graph-transportation-cost-rate :data="TRANSPORTATION_COST_FIXED"/>
-      <el-divider content-position="left"><el-text size="small">销量走势 </el-text></el-divider>
-      <!-- <Line :data="logisticsCostsGraph" :options="GRAPH_OPTS" /> -->
-      <el-divider content-position="left"><el-text size="small">需求走势 </el-text></el-divider>
-      <!-- <Line :data="logisticsCostsGraph" :options="GRAPH_OPTS" /> -->
-    </el-card>
+      <el-tab-pane name="market">
+        <template #label>
+          <el-text class="title">市场情况</el-text>
+        </template>
+        <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
+        <product-market-card readonly unit="%" :config="MARKET_SHARE_MY"/> 
+        <el-divider content-position="left"><el-text size="small">全市场销量总和</el-text></el-divider>
+        <product-market-card readonly :places=0 :config="MARKET_CAPACITY"/>
+        <el-divider content-position="left"><el-text size="small">市场规模(单位：{{ MARKET_SCALE.unit }})</el-text></el-divider>
+        <product-market-card readonly :config="MARKET_SCALE.result"/>
+      </el-tab-pane>
+      <el-tab-pane name="cost">
+        <template #label>
+          <el-text class="title">成本情况</el-text>
+        </template>
+        <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
+        <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored="bad" readonly :config="COST_PRODUCE"/>
+        <el-divider content-position="left"><el-text size="small">物流成本曲线</el-text></el-divider>
+        <graph-transportation-cost-rate :data="TRANSPORTATION_COST_FIXED"/>
+      </el-tab-pane>
+      <el-tab-pane name="profit">
+        <template #label>
+          <el-text class="title">我的情况</el-text>
+        </template>
+        <el-divider content-position="left"><el-text size="small">市场对我的净需求</el-text></el-divider>
+        <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
+        <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
+        <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
+        <el-divider content-position="left"><el-text size="small">终端利率（算上物流费用） </el-text></el-divider>
+        <product-market-card unit="%" colored="auto" readonly :config="PROFIT_NET_RATE"/>
+        <el-divider content-position="left"><el-text size="small">单件毛利 </el-text></el-divider>
+        <product-market-card readonly colored="auto" :config="PROFIT_NET"/>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -139,7 +141,7 @@ MIN_DELIVERY_COUNT
     float: left;
   }
   .globalconfig{
-    width: 480px;
+    /* width: 480px; */
   }
   .left{
     width: 1200px;
