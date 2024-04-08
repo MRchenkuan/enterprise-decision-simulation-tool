@@ -8,7 +8,7 @@
   import GraphTransportationCostRate from './components/graphs/GraphTransportationCostRate.vue';
   import ConsoleProductionPlan from './components/console/ConsoleProductionPlan.vue';
   import ConsolePricePlan from './components/console/ConsolePricePlan.vue';
-
+  import GraphPeriodTrend from './components/graphs/GraphPeriodTrend.vue';
   import {
     A, B,C,D,
     MY_PRICES, 
@@ -28,13 +28,16 @@
     REQUIREMENT_NET,
     PROFIT_NET,
     PROFIT_NET_RATE,
-    MIN_DELIVERY_COUNT
+    MIN_DELIVERY_COUNT,
+    PERIOD_DATA_HISTORY_LIST,
+MY_SALE_COUNT_HISTORY_LIST
   } from './globalState';
 import { plusMatrix, sumRows } from './tools';
+import { PowerRef } from './enhanceRef';
 
-  const activeName = ref('A');
-  const configPanelActive = ref('daily');
-  const databoardActive = ref('profit');
+  const activeName = PowerRef('activeName','A');
+  const configPanelActive = PowerRef('configPanelActive','daily');
+  const databoardActive = PowerRef('databoardActive','profit');
 
 
 
@@ -95,7 +98,7 @@ import { plusMatrix, sumRows } from './tools';
       </template>
       <el-tab-pane name="market">
         <template #label>
-          <el-text class="title">市场情况</el-text>
+          <el-text class="title"><el-icon><PieChart /></el-icon> 市场相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
         <product-market-card readonly unit="%" :config="MARKET_SHARE_MY"/> 
@@ -106,16 +109,18 @@ import { plusMatrix, sumRows } from './tools';
       </el-tab-pane>
       <el-tab-pane name="cost">
         <template #label>
-          <el-text class="title">成本情况</el-text>
+          <el-text class="title"><el-icon><DataAnalysis /></el-icon> 成本相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
         <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored="bad" readonly :config="COST_PRODUCE"/>
-        <el-divider content-position="left"><el-text size="small">物流成本曲线</el-text></el-divider>
+        <el-divider content-position="left"><el-text size="small">物流成本衰减</el-text></el-divider>
         <graph-transportation-cost-rate :data="TRANSPORTATION_COST_FIXED"/>
+        <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
+        <graph-period-trend :data="MY_SALE_COUNT_HISTORY_LIST"/>
       </el-tab-pane>
       <el-tab-pane name="profit">
         <template #label>
-          <el-text class="title">我的情况</el-text>
+          <el-text class="title"><el-icon><ShoppingCart /></el-icon> 收入相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">市场对我的净需求</el-text></el-divider>
         <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>

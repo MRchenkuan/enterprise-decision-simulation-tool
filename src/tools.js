@@ -178,16 +178,6 @@ export function parsePercentage(value) {
   return parsedValue ? parseFloat(parsedValue) / 100 : 0;
 }
 
-// const A = ref({
-//   manageCost:[5000, 6000],
-//   hours:[8,4,8,4],
-//   materialCost:700,
-//   machineCost:100,
-//   laborCost:200,
-//   hourPay: [11,14,13,17],
-//   hourRemain:[520,260,520,260],
-//   machinePay:7.65
-// })
 
 export function produceCostCalc(config, plan){
   const res = []
@@ -402,4 +392,56 @@ export function softMax(a, b) {
   // 平滑处理Math.max 便于求导
   // return Math.log(Math.exp(a) + Math.exp(b));
   return Math.max(a,b)
+}
+
+
+export function debounce(func, delay) {
+  let timeoutId;
+  
+  return function(...args) {
+      const context = this;
+      
+      clearTimeout(timeoutId);
+      
+      timeoutId = setTimeout(() => {
+          func.apply(context, args);
+      }, delay);
+  };
+}
+
+
+export function createProductMarketDataset(HIS){
+  const _datasets = []
+  const map1 = ['产品A','产品B','产品C','产品D'];
+  const map2 = ['市场1','市场2','市场3','市场4'];
+  const colors = [
+    ['#85ce61','#4e8e2f','#3e6b27','#2d481f'],
+    ['#ebb563','#a77730','#7d5b28','#533f20'],
+    ['#f78989','#b25252','#854040','#582e2e'],
+    ['#a6a9ad','#6b6d71','#525457','#393a3c'],
+  ]
+  const dates = {}
+  
+  // 将三维数据降维
+  HIS.map((martrixM,periodId)=>{
+    Object.keys(martrixM).map((key,productId)=>{
+      const line = martrixM[key]
+      line.map((cell, marketId)=>{
+        if(!dates[`${productId}-${marketId}`])dates[`${productId}-${marketId}`] = [];
+        dates[`${productId}-${marketId}`].push(cell) // 唯一市场唯一产品的数量
+      })
+    })
+  })
+
+  // 装载到图表数据
+  map1.map((k1,i1)=>{
+    map2.map((k2,i2)=>{
+      _datasets.push({
+        label: `${[map1[i2]]}-${[map2[i2]]}`,
+        backgroundColor: colors[i1][i2],
+        data:dates[`${i1}-${i2}`]
+      })
+    })
+  })
+  return _datasets
 }

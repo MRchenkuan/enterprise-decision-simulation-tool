@@ -3,10 +3,11 @@ import { ref, watch, watchEffect, reactive } from 'vue'
 import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, timesMatrix, sum2DArray, autoUnit } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
 import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
+import { PowerRef } from '../../enhanceRef';
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
-const demand = ref(['mincost'])
+const demand = PowerRef('demand',['mincost'])
 const conditions = ref({})
 const totoleCost = ref(0)
 const plan = ref({

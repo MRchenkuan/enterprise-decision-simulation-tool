@@ -1,18 +1,18 @@
 <script setup>
-import { ref, watch, reactive } from 'vue'
+import { ref, watch, watchEffect, reactive } from 'vue'
 import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
 import { COST_PRODUCE, PERIOD_DATA, MY_PRICES, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
+import { PowerRef } from '../../enhanceRef';
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
 
-const grossProfit = ref(0);
+const grossProfit = PowerRef('grossProfit', 0.01);
 
-const MY_PRICES_CACHED = ref({})
+const MY_PRICES_CACHED = PowerRef('MY_PRICES_CACHED',{})
 
-
-watch(grossProfit, ()=>{
+watch(grossProfit,()=>{
   let cost = {};
   Object.keys(COST_PRODUCE.value).map(key=>{
     const p = COST_PRODUCE.value[key][4];

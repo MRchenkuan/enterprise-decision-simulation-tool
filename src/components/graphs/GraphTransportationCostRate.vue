@@ -83,10 +83,11 @@ const GRAPH_OPTS = ref({
       labels: {
         usePointStyle: true,
         font:{
-          size:10
+          size:4.5
         }
       },
-    }
+      position:"bottom"
+    },
   }
 });
 
@@ -95,12 +96,12 @@ const GRAPH_OPTS = ref({
 
 <template>
   <div class="graph">
-    <Line height="400" :data="logisticsCostsGraph" :options="GRAPH_OPTS"/>
+    <Line height="300" :data="logisticsCostsGraph" :options="GRAPH_OPTS"/>
   </div>
 </template>
 
 <style scoped>
 .graph{
-    height: 300px;
+    height: 250px;
   }
 </style>

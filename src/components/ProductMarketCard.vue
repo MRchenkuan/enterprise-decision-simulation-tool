@@ -16,9 +16,6 @@ const props = defineProps({
   places:Number
 })
 
-// 定义一个响应式引用来存储输入框的值
-const percentage = ref('');
-
 
 const formater = props.unit==='%' ? formatAsPercentage:null;
 const parser = props.unit==='%' ? parsePercentage:null;

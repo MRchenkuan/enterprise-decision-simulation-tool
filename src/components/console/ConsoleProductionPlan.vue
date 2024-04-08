@@ -21,6 +21,7 @@ import {
   TRANSPORTATION_PLAN , 
   PRODUCTION_PLAN,
   PERIOD_DATA, laborCount, machineCount,COST_PRODUCE} from '../../globalState';
+import { PowerRef } from '../../enhanceRef';
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
@@ -69,7 +70,7 @@ function calcMachine(p, plan_arr){
 
 const laborSum = ref([])
 const mechineSum = ref([])
-const productChoice = ref(['A','B','C','D'])
+const productChoice = PowerRef('productChoice',['A','B','C','D'])
 const mlrate = ref({})
 // watch(productChoice,e=>{
 //   debugger  
