@@ -13,7 +13,6 @@
   } from 'chart.js'
   import { Line } from 'vue-chartjs'
   import { createProductMarketDataset } from '../../tools'
-  import { PowerRef } from '../../enhanceRef'
   
   ChartJS.register(
     CategoryScale,
@@ -28,7 +27,6 @@
   const props = defineProps({
     data:Array,
   })
-
   
   const data = ref({
     labels: props.data.map((it,id)=>`第${id+1}期`),
@@ -57,8 +55,12 @@
 
 
 const GRAPH_OPTS = ref({
+  type:"line",
   responsive: true,
   maintainAspectRatio: false,
+  interaction:{
+    intersect: false,
+  },
   scales: {
     y: {
       beginAtZero: true,

@@ -30,7 +30,11 @@
     PROFIT_NET_RATE,
     MIN_DELIVERY_COUNT,
     PERIOD_DATA_HISTORY_LIST,
-MY_SALE_COUNT_HISTORY_LIST
+    MY_SALE_COUNT_HISTORY_LIST,
+    MY_MARKET_REQUIREMENT_HISTORY_LIST,
+    MY_ORDER_HISTORY_LIST,
+    MY_MARKET_SHARE_HISTORY_LIST,
+    MARKET_SCALE_HISTORY_LIST
   } from './globalState';
 import { plusMatrix, sumRows } from './tools';
 import { PowerRef } from './enhanceRef';
@@ -38,6 +42,7 @@ import { PowerRef } from './enhanceRef';
   const activeName = PowerRef('activeName','A');
   const configPanelActive = PowerRef('configPanelActive','daily');
   const databoardActive = PowerRef('databoardActive','profit');
+  const graphBoardActive = PowerRef('graphBoardActive','my');
 
 
 
@@ -48,7 +53,10 @@ import { PowerRef } from './enhanceRef';
     <el-tabs v-model="configPanelActive" type="border-card" class="card">
       <el-tab-pane name="global">
         <template #label>
-          <el-text>全局配置(比赛首次开始时)</el-text>
+          <div class="tabtag">
+            <el-text>全局配置</el-text>
+            <el-text size="small">(首次开始时配置一次)</el-text>
+          </div>
         </template>
         <el-alert title="一次性配置，根据比赛界信息配置完毕即可" description="" type="warning" :closable="false" show-icon />
 
@@ -69,7 +77,11 @@ import { PowerRef } from './enhanceRef';
       
       <el-tab-pane name="daily">
         <template #label>
-          <el-text class="title">每期数据(每期开始时)</el-text>
+          <div class="tabtag">
+            <el-text class="title" type="success"><el-icon><StarFilled /></el-icon>每期数据</el-text>
+            <el-text class="title" type="success" size="small">(每期开始时维护)</el-text>
+          </div>
+
         </template>
         <el-alert title="根据比赛实况更新下述数据以获得最佳结果" type="warning" :closable="false" show-icon />
         <console-daily-data-updata :data="PERIOD_DATA" />
@@ -109,18 +121,16 @@ import { PowerRef } from './enhanceRef';
       </el-tab-pane>
       <el-tab-pane name="cost">
         <template #label>
-          <el-text class="title"><el-icon><DataAnalysis /></el-icon> 成本相关</el-text>
+          <el-text class="title"><el-icon><List /></el-icon> 成本相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
         <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored="bad" readonly :config="COST_PRODUCE"/>
         <el-divider content-position="left"><el-text size="small">物流成本衰减</el-text></el-divider>
         <graph-transportation-cost-rate :data="TRANSPORTATION_COST_FIXED"/>
-        <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
-        <graph-period-trend :data="MY_SALE_COUNT_HISTORY_LIST"/>
       </el-tab-pane>
       <el-tab-pane name="profit">
         <template #label>
-          <el-text class="title"><el-icon><ShoppingCart /></el-icon> 收入相关</el-text>
+          <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">市场对我的净需求</el-text></el-divider>
         <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
@@ -133,11 +143,41 @@ import { PowerRef } from './enhanceRef';
       </el-tab-pane>
     </el-tabs>
   </div>
+  <div class="trend">
+    <el-tabs v-model="graphBoardActive" type="border-card" class="card">
+      <el-tab-pane name="my">
+        <template #label>
+          <el-text class="title"><el-icon><DataLine /></el-icon> 我的趋势</el-text>
+        </template>
+        <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
+        <graph-period-trend :data="MY_SALE_COUNT_HISTORY_LIST"/>
+        <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
+        <graph-period-trend :data="MY_MARKET_REQUIREMENT_HISTORY_LIST"/>
+        <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
+        <graph-period-trend :data="MY_ORDER_HISTORY_LIST"/>
+      </el-tab-pane>
+      <el-tab-pane name="market">
+        <template #label>
+          <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 市场趋势</el-text>
+        </template>
+        <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
+        <graph-period-trend :data="MY_MARKET_SHARE_HISTORY_LIST"/>
+        <el-divider content-position="left"><el-text size="small">市场规模</el-text></el-divider>
+        <graph-period-trend :data="MARKET_SCALE_HISTORY_LIST"/>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 
 
 <style scoped>
+.tabtag{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
   .card{
     margin: 20px;
     width: 400px;

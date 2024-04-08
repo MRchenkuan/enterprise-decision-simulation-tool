@@ -78,6 +78,9 @@ const GRAPH_OPTS = ref({
       }
     }
   },
+  interaction:{
+    intersect: false,
+  },
   plugins: {
     legend: {
       labels: {

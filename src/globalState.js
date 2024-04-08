@@ -158,6 +158,8 @@ export const machineCount = PowerRef('machineCount','124');
 export const MY_ORDER_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
 export const MY_MARKET_REQUIREMENT_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
 export const MY_SALE_COUNT_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
+export const MARKET_SCALE_HISTORY_LIST= PowerRef('MARKET_SCALE_HISTORY_LIST', [])
+export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
@@ -226,11 +228,18 @@ watchEffect(()=>{
   MY_ORDER_HISTORY_LIST.value= [];// 存订货
   MY_MARKET_REQUIREMENT_HISTORY_LIST.value = [];// 市场对我的需求
   MY_SALE_COUNT_HISTORY_LIST.value= [];// 我的历史销量
+  MARKET_SCALE_HISTORY_LIST.value= [];// 市场规模历史
+  MY_MARKET_SHARE_HISTORY_LIST.value= [];// 我的市占历史
 
   PERIOD_DATA_HISTORY_LIST.value.map(it=>{
     const {myOrder, myMarketRequirement,mySaleCount,chanpionSaleCount,chanpionMarketRate} = it;
+    // 我相关
     MY_ORDER_HISTORY_LIST.value.push(myOrder);
     MY_MARKET_REQUIREMENT_HISTORY_LIST.value.push(myMarketRequirement);
     MY_SALE_COUNT_HISTORY_LIST.value.push(mySaleCount);
+
+    // 市场相关
+    MARKET_SCALE_HISTORY_LIST.value.push(divideMatrix(chanpionSaleCount, chanpionMarketRate))
+    MY_MARKET_SHARE_HISTORY_LIST.value.push(divideMatrix(mySaleCount, MARKET_CAPACITY.value))
   })
 })
