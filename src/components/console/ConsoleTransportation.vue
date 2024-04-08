@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch, watchEffect, reactive } from 'vue'
-import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, timesMatrix, sum2DArray, autoUnit } from '../../tools';
+import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
+import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED,PRODUCTION_PLAN} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
@@ -17,8 +17,9 @@ const plan = ref({
   D:[0,0,0,0],
 })
 
-watchEffect(()=>{
+const toSumArr = ref([])
 
+watchEffect(()=>{
   conditions.value = {
     mincost:Object.values(demand.value).indexOf('mincost')>=0,
     marketdemand:Object.values(demand.value).indexOf('marketdemand')>=0,
@@ -37,6 +38,7 @@ watchEffect(()=>{
   } else{
     plan.value = processMatrix(myOrder,(it)=>it>=0?it:0);
   }
+  toSumArr.value = sumRows(Object.values(plan.value))
   totoleCost.value = autoUnit(sum2DArray(Object.values(plusMatrix(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value),TRANSPORTATION_COST_FIXED.value))))
 })
 
@@ -84,7 +86,7 @@ const marks = reactive({
       </el-checkbox-group>  
     </div>
   </div>
-  <product-market-card class="table" readonly :config="plan"/>
+  <product-market-card class="table" readonly :config="plan" colored2="info" :extra="toSumArr"/>
   <div class="line bottom">
     <el-text class="linetitle cell" size="small">总费用:</el-text>
     <el-text class="warn" size="small"> {{ totoleCost }} </el-text>

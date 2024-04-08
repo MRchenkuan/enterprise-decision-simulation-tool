@@ -241,7 +241,7 @@ export function sumRows(matrix) {
   for (var i = 0; i < matrix.length; i++) {
       var rowSum = 0;
       for (var j = 0; j < matrix[i].length; j++) {
-          rowSum += matrix[i][j];
+          rowSum += ~~matrix[i][j];
       }
       result.push(rowSum);
   }
@@ -439,6 +439,7 @@ export function createProductMarketDataset(HIS){
       _datasets.push({
         label: `${[map1[i2]]}-${[map2[i2]]}`,
         backgroundColor: colors[i1][i2],
+        borderColor:colors[i1][i2]+'91',
         data:dates[`${i1}-${i2}`]
       })
     })

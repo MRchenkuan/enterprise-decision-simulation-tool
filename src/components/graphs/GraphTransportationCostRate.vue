@@ -45,6 +45,7 @@ function createDataset(martix){
       _datasets.push({
         label: `${[map1[i]]}-${[map2[j]]}`,
         backgroundColor: colors[i][j],
+        borderColor:colors[i][j]+'91',
         data: _data.map(it=>{
           // 固定费用除以总毛利，毛利 = 售价-成本
           const profit = 2000

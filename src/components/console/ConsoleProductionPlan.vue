@@ -11,7 +11,8 @@ import {
   processMatrix,
   processMatrixes,
   softMax,
-  sumColumns
+  sumColumns,
+  sumRows
  } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
 import {
@@ -75,11 +76,12 @@ const mlrate = ref({})
 // watch(productChoice,e=>{
 //   debugger  
 // })
-
-
+const toSumArr = ref([])
 
 
 watchEffect(()=>{
+  toSumArr.value = sumRows(Object.values(PRODUCTION_PLAN.value))
+
   Object.keys(PRODUCTION_PLAN.value).map(key=>{
     resources_labor.value[key] = calcLabor(pConfig[key].value, PRODUCTION_PLAN.value[key])
     resources_machine.value[key] = calcMachine(pConfig[key].value, PRODUCTION_PLAN.value[key])
@@ -154,6 +156,7 @@ function createSolver(lmRate, maxLR, maxMR){
     return (l1+l2+l3+l4)/lmRate+m1+m2+m3+m4;
   }
 }
+
 </script>
 
 <template>
@@ -169,7 +172,7 @@ function createSolver(lmRate, maxLR, maxMR){
       <el-checkbox value="D" name="D">产品D</el-checkbox>
     </el-checkbox-group>    
   </div>
-  <product-market-card type="produce" :config="PRODUCTION_PLAN"/>
+  <product-market-card type="produce" :config="PRODUCTION_PLAN" extra-readonly colored2="info" :extra="toSumArr"/>
   <!-- <el-divider border-style="dashed" /> -->
   <!-- <product-market-card type="produce" :places="1" readonly :config="resources_machine" :extra2="mechineSum"/> -->
   <!-- <el-divider border-style="dashed" /> -->

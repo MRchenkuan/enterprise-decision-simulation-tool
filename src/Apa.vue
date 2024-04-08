@@ -124,7 +124,7 @@ import { PowerRef } from './enhanceRef';
           <el-text class="title"><el-icon><List /></el-icon> 成本相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
-        <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored="bad" readonly :config="COST_PRODUCE"/>
+        <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored2="bad" readonly :config="COST_PRODUCE"/>
         <el-divider content-position="left"><el-text size="small">物流成本衰减</el-text></el-divider>
         <graph-transportation-cost-rate :data="TRANSPORTATION_COST_FIXED"/>
       </el-tab-pane>
@@ -133,7 +133,7 @@ import { PowerRef } from './enhanceRef';
           <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
         </template>
         <el-divider content-position="left"><el-text size="small">市场对我的净需求</el-text></el-divider>
-        <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
+        <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
         <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
         <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
         <el-divider content-position="left"><el-text size="small">终端利率（算上物流费用） </el-text></el-divider>
@@ -167,6 +167,9 @@ import { PowerRef } from './enhanceRef';
       </el-tab-pane>
     </el-tabs>
   </div>
+
+
+  
 </template>
 
 
