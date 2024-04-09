@@ -170,8 +170,6 @@ watchEffect(()=>{
     MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
     MARKET_SHARE_MY.value = divideMatrix(mySaleCount, MARKET_CAPACITY.value);
   }catch(e){
-    debugger
-
   }
 
 })

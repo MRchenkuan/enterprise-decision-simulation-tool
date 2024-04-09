@@ -11,7 +11,7 @@ export function divideMatrix(m1, m2) {
 export function divideArrays(m1,m2){
   let result = [];
   for (let i = 0; i < m1.length; i++) {
-      if(m1[i]===0){
+      if(m1[i]===0||m2[i]===0){
         result.push(0);
       } else {
         result.push((m1[i] / m2[i]));
@@ -82,11 +82,7 @@ export function plusMatrix(m1, m2) {
 export function plusArrays(m1,m2){
   let result = [];
   for (let i = 0; i < m1.length; i++) {
-      if(m1[i]===0){
-        result.push(0);
-      } else {
-        result.push(~~m1[i] + ~~m2[i]);
-      }
+    result.push(~~m1[i] + ~~m2[i]);
   }
   return result;
 } 
@@ -116,11 +112,7 @@ export function minusMatrixArray(m1, m2, colum) {
 export function minusArrays(m1,m2){
   let result = [];
   for (let i = 0; i < m1.length; i++) {
-      if(m1[i]===0){
-        result.push(0);
-      } else {
-        result.push(~~m1[i] - ~~m2[i]);
-      }
+    result.push(~~m1[i] - ~~m2[i]);
   }
   return result;
 } 
@@ -157,7 +149,6 @@ export function checkNumbers(obj, decimalPlaces) {
           }
       }
   }
-
   return { unit: maxUnit, result, originData:obj };
 }
 

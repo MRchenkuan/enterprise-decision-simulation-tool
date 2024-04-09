@@ -115,7 +115,7 @@ import { PowerRef } from './enhanceRef';
         <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
         <product-market-card readonly unit="%" :config="MARKET_SHARE_MY"/> 
         <el-divider content-position="left"><el-text size="small">全市场销量总和</el-text></el-divider>
-        <product-market-card readonly :places=0 :config="MARKET_CAPACITY"/>
+        <product-market-card readonly :places=0 :config="MARKET_CAPACITY" :extra="sumRows(Object.values(REQUIREMENT_NET))" colored2="info"/>
         <el-divider content-position="left"><el-text size="small">市场规模(单位：{{ MARKET_SCALE.unit }})</el-text></el-divider>
         <product-market-card readonly :config="MARKET_SCALE.result"/>
       </el-tab-pane>
@@ -180,6 +180,9 @@ import { PowerRef } from './enhanceRef';
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+}
+.console .card{
+  width: 460px;
 }
   .card{
     margin: 20px;

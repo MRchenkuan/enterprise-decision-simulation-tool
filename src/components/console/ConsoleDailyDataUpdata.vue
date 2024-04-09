@@ -96,7 +96,7 @@ function setUpdateState(sale, require, power){
       <el-divider content-position="left"><el-text size="small">第一名的销量</el-text></el-divider>
       <product-market-card :config="data.chanpionSaleCount"/>     
       <el-divider content-position="left"><el-text size="small">第一名的市占</el-text></el-divider>
-      <product-market-card unit="%" :config="data.chanpionMarketRate"/>
+      <product-market-card unit="%" input-type="string" :config="data.chanpionMarketRate"/>
       <el-divider border-style="dashed" />
       <el-button type="success" :plain="!updateState.sale" @click="updateState.sale=!updateState.sale">我已确认更新</el-button>
     </el-tab-pane>

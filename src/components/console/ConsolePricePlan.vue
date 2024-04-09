@@ -75,7 +75,7 @@ const marks = reactive({
     <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
     <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
   </div>
-  <product-market-card :readonly="false" :config="MY_PRICES"/>
+  <product-market-card :step="100" controls :readonly="false" :config="MY_PRICES"/>
 </template>
 
 <style scoped>

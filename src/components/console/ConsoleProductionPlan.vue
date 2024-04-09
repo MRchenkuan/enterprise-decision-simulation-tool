@@ -172,7 +172,7 @@ function createSolver(lmRate, maxLR, maxMR){
       <el-checkbox value="D" name="D">产品D</el-checkbox>
     </el-checkbox-group>    
   </div>
-  <product-market-card type="produce" :config="PRODUCTION_PLAN" extra-readonly colored2="info" :extra="toSumArr"/>
+  <product-market-card :step="10" controls type="produce" :config="PRODUCTION_PLAN" extra-readonly colored2="info" :extra="toSumArr"/>
   <!-- <el-divider border-style="dashed" /> -->
   <!-- <product-market-card type="produce" :places="1" readonly :config="resources_machine" :extra2="mechineSum"/> -->
   <!-- <el-divider border-style="dashed" /> -->
