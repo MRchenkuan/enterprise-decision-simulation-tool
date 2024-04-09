@@ -9,10 +9,13 @@ const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, 
 
 const demand = PowerRef('demand',['mincost'])
 const conditions = ref({})
-const totoleCost = ref(0)
+const dynamicCost = ref(0)
+const fixedCost = ref(0)
+const totalCost = ref(0)
 
 const plan = TRANSPORTATION_PLAN
 
+const TRANSPORTATION_PLAN_CACHED = PowerRef('TRANSPORTATION_PLAN_CACHED',{})
 const toSumArr = ref([])
 const editable = ref(true)
 
@@ -41,7 +44,20 @@ watchEffect(()=>{
   plan.value = processMatrix(plan.value, it=>roundToDecimal(it, 0))
 
   toSumArr.value = sumRows(Object.values(plan.value))
-  totoleCost.value = formatNumberWithCommas(sum2DArray(Object.values(plusMatrix(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value),TRANSPORTATION_COST_FIXED.value))))
+  const _dynamicCost = sum2DArray(Object.values(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value)));
+  let _fixedCost = 0
+  Object.keys(plan.value).map(key=>{
+    const line = TRANSPORTATION_COST_FIXED.value[key]
+    plan.value[key].map((it,id)=>{
+      if(it>0){
+        _fixedCost += ~~line[id];
+      }   
+    })
+  })
+  let _totalCost = _fixedCost + _dynamicCost;
+  dynamicCost.value = formatNumberWithCommas(_dynamicCost);
+  fixedCost.value = formatNumberWithCommas(_fixedCost)
+  totalCost.value = formatNumberWithCommas(_totalCost);
 })
 
 function formattooltip(v){
@@ -66,11 +82,24 @@ const marks = reactive({
   },
 })
 
+function save(){
+  TRANSPORTATION_PLAN_CACHED.value = plan.value
+}
+
+function reset(){
+  demand.value=[];
+  plan.value = TRANSPORTATION_PLAN_CACHED.value;
+}
+
 
 
 </script>
 
 <template>
+  <div class="line btn">
+    <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
+    <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
+  </div>
   <div class="line">
     <el-text class="linetitle" size="small">配送费率</el-text>
     <el-slider size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
@@ -90,14 +119,21 @@ const marks = reactive({
   </div>
   <product-market-card class="table" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
   <div class="line bottom">
-    <el-text class="linetitle cell" size="small">总费用:</el-text>
-    <el-text class="warn" size="small"> {{ totoleCost }} </el-text>
+    <el-text class="linetitle cell" size="small">总物流成本:</el-text>
+    <el-text class="warn" size="small">{{ dynamicCost }}</el-text>
+    <el-text class="space" size="small">+</el-text>
+    <el-text class="warn" size="small">{{ fixedCost }}</el-text>
+    <el-text class="space" size="small">=</el-text>
+    <el-text class="warn" size="small">{{ totalCost }}</el-text>
 </div>
 </template>
 
 <style scoped>
 .table{
   margin-top: 10px;
+}
+.space{
+  margin: 0 5px;
 }
 
 .line{
@@ -106,12 +142,16 @@ const marks = reactive({
   align-items: center;
   box-sizing: border-box;
 }
+.line.btn{
+  justify-content: flex-end;
+}
 .line.bottom{
   justify-content: flex-end;
   margin: 5px 0;
   font-weight: 900;
 }
 .line.bottom .linetitle{
+  width: 80px;
   margin-right: 5px;
 }
 .warn{
