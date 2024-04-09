@@ -11,7 +11,7 @@ import { debounce } from '../../tools';
 import { ElText } from 'element-plus';
 
 const newPeriodD = debounce(()=>{
-  PERIOD_DATA_HISTORY_LIST.value.push(props.data)
+  PERIOD_DATA_HISTORY_LIST.value.push(JSON.parse(JSON.stringify(props.data)))
 },300)
 
 const updateState = PowerRef('updateState',{
