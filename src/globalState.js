@@ -54,7 +54,7 @@ export const MY_PRICES = PowerRef('MY_PRICES',{
   D:[4500, 4500,4500,4500],
 })
 
-export const TRANSPORTATION_PLAN = ref({
+export const TRANSPORTATION_PLAN = PowerRef('TRANSPORTATION_PLAN',{
   A:[0,0,0,0],
   B:[0,0,0,0],
   C:[0,0,0,0],
@@ -262,8 +262,11 @@ watchEffect(()=>{
 watchEffect(()=>{
   const config = {A,B,C,D}
   const plan = PRODUCTION_PLAN.value;
-  // 总投入 = 生产成本+生产管理费
+  const tplan = TRANSPORTATION_PLAN.value;
+  // 总投入 = 生产成本+生产管理费+物流成本
+  // 生产成本
   const productInvest = sum2DArray(Object.values(timesMatrix(plan, COST_PRODUCE.value)));
+  //管理成本
   let manageInvest = 0
   Object.keys(plan).map(key=>{
     plan[key].map((it,id)=>{
@@ -279,7 +282,17 @@ watchEffect(()=>{
       }   
     })
   })
-  totalInvest.value = productInvest+manageInvest
+  // 物流成本
+  let transInvest = 0
+  Object.keys(tplan).map(key=>{
+    const line = TRANSPORTATION_COST_FIXED.value[key]
+    tplan[key].map((it,id)=>{
+      if(it>0){
+        transInvest += ~~line[id];
+      }   
+    })
+  })
+  totalInvest.value = productInvest+manageInvest+transInvest;
 })
 
 watchEffect(()=>{

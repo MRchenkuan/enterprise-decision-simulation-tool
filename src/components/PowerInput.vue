@@ -1,5 +1,6 @@
 <script setup>
 import { ref,watch, defineEmits } from "vue"
+import { roundToDecimal } from "../tools";
 
 
 const props = defineProps({
@@ -9,17 +10,23 @@ const props = defineProps({
   formater:Function,
   parser:Function,
   size:String,
-  type:String
+  type:String,
+  places:Number,
 })
 
 const emit = defineEmits(['update:value']);
 
 const innerValue = ref(props.value);
+// const innerValue = ref(roundDecimal(props.value));
 
 watch(innerValue,(newInnerValue)=>{
   emit('update:value', newInnerValue);
 })
-const sliderValue = ref(0)
+
+// todo 在PowerInput中实现小数点舍入未生效，后续补
+function roundDecimal(v){
+  return roundToDecimal(~~v,props.places);
+}
 
 </script>
 

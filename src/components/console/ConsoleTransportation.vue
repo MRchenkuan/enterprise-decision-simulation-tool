@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, watchEffect, reactive } from 'vue'
-import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit } from '../../tools';
+import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit,roundToDecimal, formatNumberWithCommas } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
 import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
@@ -10,14 +10,11 @@ const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, 
 const demand = PowerRef('demand',['mincost'])
 const conditions = ref({})
 const totoleCost = ref(0)
-const plan = ref({
-  A:[0,0,0,0],
-  B:[0,0,0,0],
-  C:[0,0,0,0],
-  D:[0,0,0,0],
-})
+
+const plan = TRANSPORTATION_PLAN
 
 const toSumArr = ref([])
+const editable = ref(true)
 
 watchEffect(()=>{
   conditions.value = {
@@ -31,15 +28,20 @@ watchEffect(()=>{
     plan.value = processMatrixes(REQUIREMENT_NET.value,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
       return it1<it2?0:it1
     } )
+    editable.value = false
   } else if(mincost){
-    plan.value = MIN_DELIVERY_COUNT.value
+    plan.value = JSON.parse(JSON.stringify(MIN_DELIVERY_COUNT.value))
+    editable.value = false
   } else if(marketdemand){
-    plan.value = REQUIREMENT_NET.value
-  } else{
-    plan.value = processMatrix(myOrder,(it)=>it>=0?it:0);
+    plan.value = JSON.parse(JSON.stringify(REQUIREMENT_NET.value))
+    editable.value = false
+  } else {
+    editable.value = true
   }
+  plan.value = processMatrix(plan.value, it=>roundToDecimal(it, 0))
+
   toSumArr.value = sumRows(Object.values(plan.value))
-  totoleCost.value = autoUnit(sum2DArray(Object.values(plusMatrix(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value),TRANSPORTATION_COST_FIXED.value))))
+  totoleCost.value = formatNumberWithCommas(sum2DArray(Object.values(plusMatrix(timesMatrix(plan.value, TRANSPORTATION_COST_DYNAMIC.value),TRANSPORTATION_COST_FIXED.value))))
 })
 
 function formattooltip(v){
@@ -78,15 +80,15 @@ const marks = reactive({
     <div class="cell">
       <el-checkbox-group v-model="demand" size="small">
         <el-checkbox value="mincost" name="mincost">
-          不超过配送费率
+          最小配送费率
         </el-checkbox>
         <el-checkbox value="marketdemand" name="marketdemand">
-          不超过市场需求
+          最大市场需求
         </el-checkbox>
       </el-checkbox-group>  
     </div>
   </div>
-  <product-market-card class="table" readonly :config="plan" colored2="info" :extra="toSumArr"/>
+  <product-market-card class="table" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
   <div class="line bottom">
     <el-text class="linetitle cell" size="small">总费用:</el-text>
     <el-text class="warn" size="small"> {{ totoleCost }} </el-text>
