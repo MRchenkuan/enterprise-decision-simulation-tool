@@ -131,8 +131,8 @@ export const PERIOD_DATA_HISTORY_LIST = PowerRef('PERIOD_DATA_HISTORY_LIST',[])
 
 
 /* 市场占有率 */
-export const MARKET_CAPACITY = ref(0)
-export const MARKET_SCALE = ref(0)
+export const MARKET_CAPACITY = ref(0) // 数量
+export const MARKET_SCALE = ref(0) //价格
 export const MARKET_SHARE_MY = ref(0)
 
 /* 成本 */
@@ -164,6 +164,7 @@ export const MY_ORDER_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
 export const MY_MARKET_REQUIREMENT_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
 export const MY_SALE_COUNT_HISTORY_LIST = PowerRef('MY_ORDER_HISTORY_LIST', [])
 export const MARKET_SCALE_HISTORY_LIST= PowerRef('MARKET_SCALE_HISTORY_LIST', [])
+export const MARKET_SCALE_MONEY_HISTORY_LIST= PowerRef('MARKET_SCALE_MONEY_HISTORY_LIST', [])
 export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
@@ -241,14 +242,17 @@ watchEffect(()=>{
   })
 })
 watchEffect(()=>{
-  MARKET_SCALE_HISTORY_LIST.value= [];// 市场规模历史
+  MARKET_SCALE_HISTORY_LIST.value= [];// 市场销量规模历史
   MY_MARKET_SHARE_HISTORY_LIST.value= [];// 我的市占历史
+  MARKET_SCALE_MONEY_HISTORY_LIST.value= [];// 我的市占历史
 
   PERIOD_DATA_HISTORY_LIST.value.map(it=>{
     const {myOrder, myMarketRequirement,mySaleCount,chanpionSaleCount,chanpionMarketRate} = it;
     // 市场相关
-    MARKET_SCALE_HISTORY_LIST.value.push(divideMatrix(chanpionSaleCount, chanpionMarketRate))
+    const marketTotleSaleCount = divideMatrix(chanpionSaleCount, chanpionMarketRate)
+    MARKET_SCALE_HISTORY_LIST.value.push(marketTotleSaleCount)
     MY_MARKET_SHARE_HISTORY_LIST.value.push(divideMatrix(mySaleCount, MARKET_CAPACITY.value))
+    MARKET_SCALE_MONEY_HISTORY_LIST.value.push(timesMatrix(marketTotleSaleCount, MY_PRICES.value))
   })
 })
 

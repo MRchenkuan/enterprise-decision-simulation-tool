@@ -427,7 +427,7 @@ export function createProductMarketDataset(HIS){
   map1.map((k1,i1)=>{
     map2.map((k2,i2)=>{
       _datasets.push({
-        label: `${[map1[i2]]}-${[map2[i2]]}`,
+        label: `${[map1[i1]]}-${[map2[i2]]}`,
         backgroundColor: colors[i1][i2],
         borderColor:colors[i1][i2]+'91',
         data:dates[`${i1}-${i2}`]

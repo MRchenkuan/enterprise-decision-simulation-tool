@@ -35,6 +35,7 @@
     MY_ORDER_HISTORY_LIST,
     MY_MARKET_SHARE_HISTORY_LIST,
     MARKET_SCALE_HISTORY_LIST,
+    MARKET_SCALE_MONEY_HISTORY_LIST,
     totalIncome,
     totalProfit,
     totalInvest
@@ -182,7 +183,7 @@ import { PowerRef } from './enhanceRef';
         <graph-period-trend :data="MY_SALE_COUNT_HISTORY_LIST"/>
         <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
         <graph-period-trend :data="MY_MARKET_REQUIREMENT_HISTORY_LIST"/>
-        <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
+        <el-divider content-position="left"><el-text size="small">我的存&订货</el-text></el-divider>
         <graph-period-trend :data="MY_ORDER_HISTORY_LIST"/>
       </el-tab-pane>
       <el-tab-pane name="market">
@@ -191,8 +192,10 @@ import { PowerRef } from './enhanceRef';
         </template>
         <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
         <graph-period-trend :data="MY_MARKET_SHARE_HISTORY_LIST"/>
-        <el-divider content-position="left"><el-text size="small">市场规模</el-text></el-divider>
+        <el-divider content-position="left"><el-text size="small">全市场销量</el-text></el-divider>
         <graph-period-trend :data="MARKET_SCALE_HISTORY_LIST"/>
+        <el-divider content-position="left"><el-text size="small">市场规模</el-text></el-divider>
+        <graph-period-trend :data="MARKET_SCALE_MONEY_HISTORY_LIST"/>
       </el-tab-pane>
     </el-tabs>
   </div>
