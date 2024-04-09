@@ -176,9 +176,9 @@ export function produceCostCalc(config, plan){
   // 原材料+机器成本
   for(let i=0; i<plan.length;i++){
     res.push(
-      config.materialCost
-      +config.machineCost*config.machinePay
-      +config.laborCost*config.hourPay[i])
+      ~~config.materialCost
+      +~~config.machineCost*config.machinePay
+      +~~config.laborCost*config.hourPay[i])
   }
   res.push(sumArray(plan)>0?sumProduct(res,plan)/sumArray(plan):res[0])
   return res;
@@ -198,15 +198,15 @@ export function sumProduct(arr1, arr2) {
     if (arr1.length !== arr2.length) {
       throw new Error('一维数组长度不匹配');
     }
-    return arr1.reduce((acc, value, index) => acc + value * arr2[index], 0);
+    return arr1.reduce((acc, value, index) => ~~acc + ~~value * arr2[index], 0);
   } else if (!isOneDimensional(arr1) && !isOneDimensional(arr2)) {
     // 如果都是二维数组，进行矩阵相乘并求和
     if (arr1.length !== arr2.length || arr1[0].length !== arr2[0].length) {
       throw new Error('二维数组维度不匹配');
     }
     return arr1.reduce((acc, row, rowIndex) => {
-      return acc + row.reduce((innerAcc, value, colIndex) => {
-        return innerAcc + value * arr2[rowIndex][colIndex];
+      return ~~acc + row.reduce((innerAcc, value, colIndex) => {
+        return ~~innerAcc + ~~value * arr2[rowIndex][colIndex];
       }, 0);
     }, 0);
   } else {
@@ -219,7 +219,7 @@ export function sumColumns(matrix) {
 
   for (var i = 0; i < matrix.length; i++) {
       for (var j = 0; j < matrix[i].length; j++) {
-          result[j] += matrix[i][j];
+          result[j] += ~~matrix[i][j];
       }
   }
 
@@ -245,7 +245,7 @@ export function sum2DArray(arr) {
   let totalSum = 0;
   for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
-          totalSum += arr[i][j];
+          totalSum += ~~arr[i][j];
       }
   }
   return totalSum;
