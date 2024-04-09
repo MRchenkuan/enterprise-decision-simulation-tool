@@ -1,5 +1,5 @@
 import { ref, watch, watchEffect } from 'vue';
-import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber} from './tools.js'
+import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber, sumRows, timesArrays, sumArray, formatNumberWithCommas, sum2DArray} from './tools.js'
 import { PowerRef } from './enhanceRef.js';
 
 
@@ -136,8 +136,8 @@ export const MARKET_SCALE = ref(0)
 export const MARKET_SHARE_MY = ref(0)
 
 /* 成本 */
-export const COST_PRODUCE = ref(0); 
-export const COST_PRODUCE_DYNAMIC = ref(0); 
+export const COST_PRODUCE = ref(0); // 单品单车间成本矩阵
+export const COST_PRODUCE_DYNAMIC = ref(0); // 根据产量实时计算单品平均成本
 export const COST_FINAL = ref(0);
 /* 毛利润 */
 export const PROFIT_GROSS = ref(0)
@@ -147,6 +147,11 @@ export const PROFIT_NET = ref(0)
 export const PROFIT_NET_RATE = ref(0)
 // 最小配送统计
 export const MIN_DELIVERY_COUNT = ref(0);
+
+// 总收入、盈利、投入
+export const totalIncome = ref(0)
+export const totalProfit = ref(0)
+export const totalInvest = ref(0)
 
 export const minTransportCostRate = PowerRef('minTransportCostRate','0.08')
 // 最大人工数
@@ -245,4 +250,38 @@ watchEffect(()=>{
     MARKET_SCALE_HISTORY_LIST.value.push(divideMatrix(chanpionSaleCount, chanpionMarketRate))
     MY_MARKET_SHARE_HISTORY_LIST.value.push(divideMatrix(mySaleCount, MARKET_CAPACITY.value))
   })
+})
+
+watchEffect(()=>{
+  const avgPrices = sumRows(Object.values(MY_PRICES.value)).map(it=>it/4)
+  const production = sumRows(Object.values(PRODUCTION_PLAN.value))
+  // 总收入 = 产品数量*平均价格
+  totalIncome.value = sumArray(timesArrays(avgPrices, production))
+})
+
+watchEffect(()=>{
+  const config = {A,B,C,D}
+  const plan = PRODUCTION_PLAN.value;
+  // 总投入 = 生产成本+生产管理费
+  const productInvest = sum2DArray(Object.values(timesMatrix(plan, COST_PRODUCE.value)));
+  let manageInvest = 0
+  Object.keys(plan).map(key=>{
+    plan[key].map((it,id)=>{
+      if(it>0){
+        if(id==0||id==1){
+          // 第一班开工
+          manageInvest+=~~config[key].value.manageCost[0]
+        }
+        if(id==2||id==3){
+          // 第一班开工
+          manageInvest+=~~config[key].value.manageCost[1]
+        }
+      }   
+    })
+  })
+  totalInvest.value = productInvest+manageInvest
+})
+
+watchEffect(()=>{
+  totalProfit.value = totalIncome.value-totalInvest.value
 })

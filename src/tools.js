@@ -185,7 +185,7 @@ export function produceCostCalc(config, plan){
 }
 
 
-function sumArray(arr) {
+export function sumArray(arr) {
   return arr.reduce((acc, curr) => ~~acc + ~~curr, 0);
 }
 
@@ -239,7 +239,6 @@ export function sumRows(matrix) {
 
   return result;
 }
-
 
 export function sum2DArray(arr) {
   let totalSum = 0;
@@ -436,4 +435,14 @@ export function createProductMarketDataset(HIS){
     })
   })
   return _datasets
+}
+
+
+export function formatNumberWithCommas(number) {
+  // 转换成字符串形式
+  let strNumber = String(number);
+  // 正则表达式，匹配数字的千分位
+  let regex = /(\d)(?=(\d{3})+(?!\d))/g;
+  // 使用正则表达式替换
+  return strNumber.replace(regex, "$1,");
 }

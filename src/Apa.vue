@@ -34,15 +34,30 @@
     MY_MARKET_REQUIREMENT_HISTORY_LIST,
     MY_ORDER_HISTORY_LIST,
     MY_MARKET_SHARE_HISTORY_LIST,
-    MARKET_SCALE_HISTORY_LIST
+    MARKET_SCALE_HISTORY_LIST,
+    totalIncome,
+    totalProfit,
+    totalInvest
   } from './globalState';
-import { plusMatrix, sumRows } from './tools';
+import { plusMatrix, sumRows,formatNumberWithCommas } from './tools';
 import { PowerRef } from './enhanceRef';
 
   const activeName = PowerRef('activeName','A');
   const configPanelActive = PowerRef('configPanelActive','daily');
   const databoardActive = PowerRef('databoardActive','profit');
   const graphBoardActive = PowerRef('graphBoardActive','my');
+
+  function colorClass(v){
+    if(~~v<0){
+      return 'bad'
+    }
+    if(~~v>0){
+      return 'good'
+    }
+    if(~~v==0){
+      return 'info'
+    }
+  }
 
 
 
@@ -100,6 +115,20 @@ import { PowerRef } from './enhanceRef';
       <console-transportation/>
       <el-divider content-position="left"><el-text size="small">生产策略 </el-text></el-divider>
       <console-production-plan/>
+      <el-divider content-position="left" border-style="dashed"></el-divider>
+      <div class="line">
+        <el-text class="cell" size="small">预计投入：</el-text>
+        <el-text size="small" class="bad">{{ formatNumberWithCommas(totalInvest) }}</el-text>
+      </div>
+      <div class="line">
+        <el-text class="cell" size="small">预计收入：</el-text>
+        <el-text size="small" :class="colorClass(totalIncome)">{{ formatNumberWithCommas(totalIncome) }}</el-text>
+      </div>
+      <div class="line">
+        <el-text class="cell" size="small">预计利润：</el-text>
+        <el-text size="small" :class="colorClass(totalProfit)">{{ formatNumberWithCommas(totalProfit) }}</el-text>
+      </div>
+      
     </el-card>
   </div>
 
@@ -175,6 +204,27 @@ import { PowerRef } from './enhanceRef';
 
 
 <style scoped>
+.line{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-sizing: border-box;
+}
+.line .cell{
+  font-weight: 900;
+}
+.good{
+  color: #67C23A;
+  font-weight: 900;
+}
+.info{
+  color: #409EFF;
+  font-weight: 900;
+}
+.bad{
+  color: #F56C6C;
+  font-weight: 900;
+}
 .tabtag{
   display: flex;
   flex-direction: column;
