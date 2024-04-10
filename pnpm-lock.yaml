@@ -20,6 +20,9 @@ dependencies:
   javascript-lp-solver:
     specifier: ^0.4.24
     version: 0.4.24
+  papaparse:
+    specifier: ^5.4.1
+    version: 5.4.1
   unplugin-auto-import:
     specifier: ^0.17.5
     version: 0.17.5
@@ -900,6 +903,10 @@ packages:
 
   /normalize-wheel-es@1.2.0:
     resolution: {integrity: sha512-Wj7+EJQ8mSuXr2iWfnujrimU35R2W4FAErEyTmJoJ7ucwTn2hOUSsRehMb5RSYkxXGTM7Y9QpvPmp++w5ftoJw==}
+    dev: false
+
+  /papaparse@5.4.1:
+    resolution: {integrity: sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==}
     dev: false
 
   /pathe@1.1.2:

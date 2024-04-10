@@ -125,7 +125,7 @@ function reset(){
     <el-text class="warn" size="small">{{ fixedCost }}</el-text>
     <el-text class="space" size="small">=</el-text>
     <el-text class="warn" size="small">{{ totalCost }}</el-text>
-</div>
+  </div>
 </template>
 
 <style scoped>

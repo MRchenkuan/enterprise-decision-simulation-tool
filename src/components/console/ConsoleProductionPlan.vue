@@ -161,11 +161,11 @@ function createSolver(lmRate, maxLR, maxMR){
 
 <template>
   <div class="options">
-    <el-button type="primary" size="small" @click="byRequire">按需求计算</el-button>
-    <el-button type="primary" size="small" @click="autoMax">最大生产力</el-button>
+    <el-button type="primary" size="small" disabled @click="byRequire">按需求计算</el-button>
+    <el-button type="primary" size="small" disabled @click="autoMax">最大生产力</el-button>
   </div>
   <div class="options">
-    <el-checkbox-group v-model="productChoice" size="small">
+    <el-checkbox-group v-model="productChoice" size="small" disabled>
       <el-checkbox value="A" name="A">产品A</el-checkbox>
       <el-checkbox value="B" name="B">产品B</el-checkbox>
       <el-checkbox value="C" name="C">产品C</el-checkbox>

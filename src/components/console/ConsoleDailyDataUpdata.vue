@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, unref } from 'vue'
 import ProductMarketCard from '../ProductMarketCard.vue';
 const props = defineProps({
   data: Object,
@@ -9,6 +9,7 @@ import {laborCount,machineCount, PERIOD_DATA_HISTORY_LIST } from '../../globalSt
 import { PowerRef } from '../../enhanceRef';
 import { debounce } from '../../tools';
 import { ElText } from 'element-plus';
+import PowerUploader from '../PowerUploader.vue'
 
 const newPeriodD = debounce(()=>{
   PERIOD_DATA_HISTORY_LIST.value.push(JSON.parse(JSON.stringify(props.data)))
@@ -48,37 +49,40 @@ function setUpdateState(sale, require, power){
     <el-text v-if="PERIOD_DATA_HISTORY_LIST.length" class="periodtitle">《第 <el-icon><Clock /></el-icon> {{PERIOD_DATA_HISTORY_LIST.length+1}} 期局面数据》</el-text>
     <div></div>
     <div class="optrations">
-      <el-popconfirm
-        width="350"
-        icon="WarningFilled"
-        title="手动更新数据，并点击保存当期为历史数据"
-        confirm-button-text="创建新一期"
-        cancel-button-text="不保存, 再改改"
-        cancel-button-type="text"
-        icon-color="#E6A23C"
-        trigger="hover"
-        placement="top"
-        @confirm="newPeriod">
-        <template #reference>
-          <el-button type="primary" :disabled="!allUpdated" icon="CirclePlus" size="small" round>新建一期</el-button>
-        </template>
-      </el-popconfirm>
-      <el-popconfirm
-        width="300"
-        icon="CircleCloseFilled"
-        title="将会重置所有“期”的数据,不只是当期"
-        confirm-button-text="我就要重置"
-        cancel-button-text="点错了"
-        cancel-button-type="primary"
-        confirm-button-type="text"
-        trigger="click"
-        placement="top"
-        icon-color="#F56C6C"
-        @confirm="clearPeriod">
-        <template #reference>
-          <el-button type="danger" icon="DeleteFilled" size="small" round>重置所有</el-button>
-        </template>
-      </el-popconfirm>
+      <power-uploader/>
+      <el-button-group class="ml-4" size="small">
+        <el-popconfirm
+          width="350"
+          icon="WarningFilled"
+          title="手动添加一期数据用于分析，所有数据都需要点击【确认更新】了才能创建下一期"
+          confirm-button-text="创建新一期"
+          cancel-button-text="不保存, 再改改"
+          cancel-button-type="text"
+          icon-color="#E6A23C"
+          trigger="hover"
+          placement="top"
+          @confirm="newPeriod">
+          <template #reference>
+            <el-button type="primary" :disabled="!allUpdated" icon="CirclePlus" round>手动创建</el-button>
+          </template>
+        </el-popconfirm>
+        <el-popconfirm
+          width="300"
+          icon="CircleCloseFilled"
+          title="重置所有“期”的数据,不只是当期"
+          confirm-button-text="我就要重置"
+          cancel-button-text="点错了"
+          cancel-button-type="primary"
+          confirm-button-type="text"
+          trigger="hover"
+          placement="top"
+          icon-color="#F56C6C"
+          @confirm="clearPeriod">
+          <template #reference>
+            <el-button type="danger" icon="DeleteFilled" round/>
+          </template>
+        </el-popconfirm>
+      </el-button-group>
     </div>
   </div>
   
