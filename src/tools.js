@@ -1,5 +1,14 @@
 import solver from 'javascript-lp-solver'
 
+// 两个序列相除
+export function divideSequence(d1,d2){
+  return d1.map((m1, id1)=>{
+    const m2 = d2[id1];
+    return divideMatrix(m1, m2);
+  })
+}
+
+// 两个标签矩阵相除
 export function divideMatrix(m1, m2) {
   const _m = {}
   Object.keys(m1).map(key=>{
@@ -11,7 +20,7 @@ export function divideMatrix(m1, m2) {
 export function divideArrays(m1,m2){
   let result = [];
   for (let i = 0; i < m1.length; i++) {
-      if(m1[i]===0||m2[i]===0){
+    if(parseFloat(m1[i])===0 || parseFloat(m2[i])===0){
         result.push(0);
       } else {
         result.push((m1[i] / m2[i]));
@@ -446,3 +455,17 @@ export function formatNumberWithCommas(number) {
   // 使用正则表达式替换
   return strNumber.replace(regex, "$1,");
 }
+
+
+export function formatNumber(number, places) {
+  if (number < 1000) {
+      return number.toString(); // 数字小于1000时直接返回原始数字
+  } else if (number < 1000000) {
+      return (number / 1000).toFixed(places) + 'k'; // 数字介于1000和1000000之间时，返回以k为单位的数字
+  } else if (number < 1000000000) {
+      return (number / 1000000).toFixed(places) + 'm'; // 数字介于1000000和1000000000之间时，返回以m为单位的数字
+  } else {
+      return (number / 1000000000).toFixed(places) + 'b'; // 数字大于等于1000000000时，返回以b为单位的数字
+  }
+}
+

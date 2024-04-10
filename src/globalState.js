@@ -167,6 +167,10 @@ export const MARKET_SCALE_HISTORY_LIST= PowerRef('MARKET_SCALE_HISTORY_LIST', []
 export const MARKET_SCALE_MONEY_HISTORY_LIST= PowerRef('MARKET_SCALE_MONEY_HISTORY_LIST', [])
 export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
+// 文件导入相关
+export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
+export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
+
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
 watchEffect(()=>{

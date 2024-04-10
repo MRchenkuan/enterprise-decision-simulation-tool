@@ -1,15 +1,13 @@
 <script setup>
 import { ref,watch, defineEmits, watchEffect } from "vue"
-import pp from 'papaparse';
 import { PowerRef } from "../enhanceRef";
-import { MY_MARKET_REQUIREMENT_HISTORY_LIST,PERIOD_DATA_HISTORY_LIST } from "../globalState";
+import { 
+  MY_MARKET_REQUIREMENT_HISTORY_LIST,
+  PERIOD_DATA_HISTORY_LIST,
+  PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE,
+  TIME_SEQ_DATA_LIST,
+} from "../globalState";
 
-
-const props = defineProps({
-
-})
-
-const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[])
 function fileProcess(e){
   const reader = new FileReader();
   const data = [];
@@ -38,9 +36,25 @@ watchEffect(()=>{
   //   myOrder:{A,B,C,D},
   //   mySaleCount:{A,B,C,D},
   // }
-  const saleCount = processData(PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value, 'saleCount')
-  console.log(PERIOD_DATA_HISTORY_LIST.value, saleCount)
+  const p = PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value;
+  const map = {};
+  ;[
+    'price',
+    'prmtInvest',
+    'advInvest',
+    'devlevel',
+    'requirementCount',
+    'saleCount',
+    'storeCount',
+    'orderCount',
+    'rightRate',
+    'marketShare'
+  ].map(key=>{
+    map[key] = processData(p,key)
+  })
+  TIME_SEQ_DATA_LIST.value = map;
 })
+
 
 function processData(data, target){
   const hist = JSON.parse(JSON.stringify(data))
@@ -99,7 +113,7 @@ function processData(data, target){
           <el-text class="cotent" size="small">上传内部报表最后一个标签中下载的csv文件自动解析</el-text>
         </div>
       </template>
-        <el-button size="small" type="success" icon="Upload" disabled round>自动上传并解析</el-button>              
+        <el-button size="small" type="success" icon="Upload" round>自动上传并解析</el-button>              
       </el-tooltip>
   </el-upload>
 </template>

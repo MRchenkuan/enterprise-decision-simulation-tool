@@ -12,7 +12,7 @@
     Legend
   } from 'chart.js'
   import { Line } from 'vue-chartjs'
-  import { createProductMarketDataset } from '../../tools'
+  import { createProductMarketDataset, formatNumber } from '../../tools'
   
   ChartJS.register(
     CategoryScale,
@@ -26,6 +26,9 @@
 
   const props = defineProps({
     data:Array,
+    percent:Boolean,
+    height:Number,
+    autoUnit:Boolean
   })
   
   const data = ref({
@@ -66,12 +69,32 @@ const GRAPH_OPTS = ref({
       beginAtZero: true,
       ticks: {
         callback: function(value, index, values) {
-          return value //+ '%'; // 在标签后添加百分号
+          if(props.percent){
+            return (value*100).toFixed(0) + '%'; // 在标签后添加百分号
+          }else if(props.autoUnit){
+            return formatNumber(value, 0)
+          }else{
+            return value
+          }
+          
         }
       }
     }
   },
   plugins: {
+    tooltip: {
+      callbacks: {
+        label: (v)=>{
+          if(props.percent){
+            return (v.parsed.y*100).toFixed(1) + '%'
+          }else if(props.autoUnit){
+            return formatNumber(v.parsed.y, 1)
+          } else {
+            return (v.parsed.y).toFixed(0)
+          }
+        },
+      }
+    },
     legend: {
       // display:false,
       labels: {
@@ -89,12 +112,10 @@ const GRAPH_OPTS = ref({
 
 <template>
   <div class="graph">
-    <Line height="300" :data="data" :options="GRAPH_OPTS"/>
+    <Line :height="props.height||300" :data="data" :options="GRAPH_OPTS"/>
   </div>
 </template>
 
 <style scoped>
-.graph{
-    height: 250px;
-  }
+
 </style>
