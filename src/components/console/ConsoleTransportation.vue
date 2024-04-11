@@ -96,29 +96,31 @@ function reset(){
 </script>
 
 <template>
-  <div class="line btn">
-    <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
-    <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
-  </div>
-  <div class="line">
-    <el-text class="linetitle" size="small">配送费率</el-text>
-    <el-slider size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
-  </div>
-  <div class="line">
-    <el-text class="linetitle" size="small">配送要求</el-text>
-    <div class="cell">
-      <el-checkbox-group v-model="demand" size="small">
-        <el-checkbox value="mincost" name="mincost">
-          最小配送费率
-        </el-checkbox>
-        <el-checkbox value="marketdemand" name="marketdemand">
-          最大市场需求
-        </el-checkbox>
-      </el-checkbox-group>  
+  <div class="panel-header">
+    <div class="line btn">
+      <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
+      <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
+    </div>
+    <div class="line">
+      <el-text class="linetitle" size="small">配送费率</el-text>
+      <el-slider :disabled="!conditions.mincost" size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
+    </div>
+    <div class="line">
+      <el-text class="linetitle" size="small">配送要求</el-text>
+      <div class="cell">
+        <el-checkbox-group v-model="demand" size="small">
+          <el-checkbox value="mincost" name="mincost">
+            不超过配送费
+          </el-checkbox>
+          <el-checkbox value="marketdemand" name="marketdemand">
+            最大市场需求
+          </el-checkbox>
+        </el-checkbox-group>  
+      </div>
     </div>
   </div>
-  <product-market-card class="table" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
-  <div class="line bottom">
+  <product-market-card :disabled="conditions.mincost || conditions.marketdemand" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
+  <div class="footer">
     <el-text class="linetitle cell" size="small">总物流成本:</el-text>
     <el-text class="warn" size="small">{{ dynamicCost }}</el-text>
     <el-text class="space" size="small">+</el-text>
@@ -129,9 +131,6 @@ function reset(){
 </template>
 
 <style scoped>
-.table{
-  margin-top: 10px;
-}
 .space{
   margin: 0 5px;
 }

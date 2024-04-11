@@ -12,6 +12,7 @@ const props = defineProps({
   size:String,
   type:String,
   places:Number,
+  disabled: Boolean
 })
 
 const emit = defineEmits(['update:value']);
@@ -54,6 +55,7 @@ function roundDecimal(v){
     :step="step" 
     v-model="innerValue" 
     :size="size"
+    :disabled="disabled"
   />
   <el-input v-else 
     :controls="controls" 
@@ -61,6 +63,7 @@ function roundDecimal(v){
     :formatter="formater" 
     :parser="parser" 
     :size="size" 
+    :disabled="disabled"
   />
 </template>
 

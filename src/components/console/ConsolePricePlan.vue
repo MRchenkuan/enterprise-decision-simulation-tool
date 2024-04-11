@@ -69,13 +69,16 @@ const marks = reactive({
 </script>
 
 <template>
-  <div class="line">
-    <el-text class="linetitle" size="small">成本利率</el-text>
-    <el-slider size="small" :min="0.01" :max="1" :step="0.01" v-model="grossProfit" :format-tooltip="formattooltip" :marks="marks" />
-    <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
-    <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
+  <div class="panel-header">
+    <div class="line">
+      <el-text class="linetitle" size="small">成本利率</el-text>
+      <el-slider size="small" :min="0.01" :max="1" :step="0.01" v-model="grossProfit" :format-tooltip="formattooltip" :marks="marks" />
+      <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
+      <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
+    </div>
   </div>
   <product-market-card :step="100" controls :readonly="false" :config="MY_PRICES"/>
+  <div class="footer"></div>
 </template>
 
 <style scoped>

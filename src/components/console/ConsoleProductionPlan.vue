@@ -5,8 +5,6 @@ import {
   divideArrays,
   divideMatrix,
   formatAsPercentage, 
-  gradientDescent, 
-  maximizeXValuesWithLP, 
   parsePercentage, 
   processMatrix,
   processMatrixes,
@@ -103,22 +101,7 @@ function byRequire(){
 }
 
 function autoMax(){
-  const products = ['A','B','C','D'];
-  const lmax = 220;
-  const mmax = 124;
-  const lmrate = {
-    A:2,B:1.6,C:0.6,D:0.5
-  }
 
-  // products.length
-
-  const PC_FUNC = window.pf = createSolver(lmrate.C, lmax,mmax);
-  const result = gradientDescent(10,1000,0.1,0.5,PC_FUNC);
-  const machineLimit = result.map((it)=>it/lmrate.C)
-  console.log('l',result)
-  console.log('m',machineLimit)
-  console.log('cl',calcProductByLabor(result,C.value))
-  console.log('cm',calcProductByMachine(machineLimit,C.value))
 }
 
 function calcProductByLabor(laborLimit, p){
@@ -160,24 +143,30 @@ function createSolver(lmRate, maxLR, maxMR){
 </script>
 
 <template>
-  <div class="options">
-    <el-button type="primary" size="small" disabled @click="byRequire">按需求计算</el-button>
-    <el-button type="primary" size="small" disabled @click="autoMax">最大生产力</el-button>
-  </div>
-  <div class="options">
-    <el-checkbox-group v-model="productChoice" size="small" disabled>
-      <el-checkbox value="A" name="A">产品A</el-checkbox>
-      <el-checkbox value="B" name="B">产品B</el-checkbox>
-      <el-checkbox value="C" name="C">产品C</el-checkbox>
-      <el-checkbox value="D" name="D">产品D</el-checkbox>
-    </el-checkbox-group>    
+  <div class="panel-header">
+    <div class="lmconfig">
+      <el-text class="lmconfigtitle" size="small">机器数</el-text>
+        <el-input v-model="machineCount" size="small" style="width: 60px;" />
+
+        <el-text class="lmconfigtitle" size="small">人力数</el-text>
+        <el-input v-model="laborCount" size="small" style="width: 60px;" />
+    </div>
+    
+    <div class="options">
+      <el-button type="primary" size="small" disabled @click="byRequire">按需求</el-button>
+      <el-button type="primary" size="small" disabled @click="autoMax">最大生产力</el-button>
+    </div>
+    <div class="options">
+      <el-checkbox-group v-model="productChoice" size="small" disabled>
+        <el-checkbox value="A" name="A">产品A</el-checkbox>
+        <el-checkbox value="B" name="B">产品B</el-checkbox>
+        <el-checkbox value="C" name="C">产品C</el-checkbox>
+        <el-checkbox value="D" name="D">产品D</el-checkbox>
+      </el-checkbox-group>    
+    </div>
   </div>
   <product-market-card :step="10" controls type="produce" :config="PRODUCTION_PLAN" extra-readonly colored2="info" :extra="toSumArr"/>
-  <!-- <el-divider border-style="dashed" /> -->
-  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_machine" :extra2="mechineSum"/> -->
-  <!-- <el-divider border-style="dashed" /> -->
-  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_labor" :extra2="laborSum"/> -->
-  <div class="config">
+  <div class="footer">
     <div class="line">
       <el-text class="linetitle cell" size="small">机器数:</el-text>
       <el-text :class="{cell:true,warn:mechineRequire>machineCount}" size="small"> {{ mechineRequire }} </el-text>
@@ -187,14 +176,24 @@ function createSolver(lmRate, maxLR, maxMR){
       <el-text class="cell" size="small">/{{ laborCount }} 人</el-text>
     </div>
   </div>
+  <!-- <el-divider border-style="dashed" /> -->
+  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_machine" :extra2="mechineSum"/> -->
+  <!-- <el-divider border-style="dashed" /> -->
+  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_labor" :extra2="laborSum"/> -->
 </template>
 
 <style scoped>
+.lmconfig{
+  line-height: 1;
+  margin: 0 0 5px;
+  display: flex;
+  justify-content: flex-end;
+}
+.lmconfigtitle{
+  margin:0 5px
+}
 .warn{
   color: #F56C6C;
-}
-.config{
-  margin: 5px 0;
 }
 .table{
   margin-top: 10px;
@@ -203,7 +202,10 @@ function createSolver(lmRate, maxLR, maxMR){
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+.options .linetitle{
+  margin: 0 5px;
 }
 .cell{
   font-weight: 900;

@@ -98,23 +98,23 @@ function processData(data, target){
 <template>
   <el-upload
       :show-file-list="false"
-      class="upload-demo"
       action="#"
       :before-upload="fileProcess"
       :limit="1"
       accept=".csv"
     >
-    <el-tooltip
-      effect="light"
-      placement="top">
-      <template #content>
-        <div class="line">
-          <el-text class="title" size="small">上传并自动解析(推荐)</el-text>
-          <el-text class="cotent" size="small">上传内部报表最后一个标签中下载的csv文件自动解析</el-text>
-        </div>
+
+    <el-popover
+      placement="top-start"
+      title="上传并自动解析(推荐)"
+      :width="300"
+      trigger="hover"
+      content="到内部报表中最后一个标签「时间序列数据」中，下载「全部时间序列数据」的csv文件，并在此处上传以解析"
+    >
+      <template #reference>
+        <slot></slot>
       </template>
-        <el-button size="small" type="success" icon="Upload" round>自动上传并解析</el-button>              
-      </el-tooltip>
+    </el-popover>
   </el-upload>
 </template>
 

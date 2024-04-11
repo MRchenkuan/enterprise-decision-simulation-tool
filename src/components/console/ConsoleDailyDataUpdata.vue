@@ -23,23 +23,22 @@ const updateState = PowerRef('updateState',{
 const allUpdated = PowerRef('allUpdated',false);
 
 watchEffect(()=>{
-  const {sale, require, power} = updateState.value;
-  allUpdated.value = sale&&require&&power
+  const {sale, require} = updateState.value;
+  allUpdated.value = sale&&require
 })
 
 function newPeriod(){
   newPeriodD()
-  setUpdateState(false, false, false,)
+  setUpdateState(false, false)
 }
 function clearPeriod(){
   PERIOD_DATA_HISTORY_LIST.value=[];
-  setUpdateState(false, false, false,)
+  setUpdateState(false, false)
 }
 
-function setUpdateState(sale, require, power){
+function setUpdateState(sale, require){
   updateState.value.sale = sale;
   updateState.value.require = require;
-  updateState.value.power = power;
 }
 
 </script>
@@ -49,7 +48,6 @@ function setUpdateState(sale, require, power){
     <el-text v-if="PERIOD_DATA_HISTORY_LIST.length" class="periodtitle">《第 <el-icon><Clock /></el-icon> {{PERIOD_DATA_HISTORY_LIST.length+1}} 期局面数据》</el-text>
     <div></div>
     <div class="optrations">
-      <power-uploader/>
       <el-button-group class="ml-4" size="small">
         <el-popconfirm
           width="350"
@@ -117,25 +115,6 @@ function setUpdateState(sale, require, power){
       <product-market-card :config="data.myOrder"/>
       <el-divider border-style="dashed" />
       <el-button type="success" icon="Check" :plain="!updateState.require" @click="updateState.require=!updateState.require">我已确认更新</el-button>
-    </el-tab-pane>
-    <el-tab-pane name="生产力">
-      <template #label>
-        <div class="tabtag">
-          <el-text size="small">生产力</el-text>
-          <el-text v-if="!updateState.power" size="small" class="notupdate">(未更新)</el-text>
-          <el-text v-else size="small" class="updated">(已更新)</el-text>        </div>
-      </template>
-      <el-divider content-position="left"><el-text size="small">生产力水平</el-text></el-divider>
-      <div class="line">
-        <el-text class="linetitle cell" size="small">可用工人数</el-text>
-        <el-input v-model="laborCount" size="small" class="input cell" />
-      </div>
-      <div class="line">
-        <el-text class="cell linetitle" size="small">可用机器数</el-text>
-        <el-input v-model="machineCount" size="small" class="input cell" />
-      </div>
-      <el-divider border-style="dashed" />
-      <el-button type="success" icon="Check" :plain="!updateState.power" @click="updateState.power=!updateState.power">我已确认更新</el-button>
     </el-tab-pane>
   </el-tabs>
 </template>

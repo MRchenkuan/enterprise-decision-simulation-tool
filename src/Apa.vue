@@ -7,8 +7,10 @@
   import ConsoleTransportation from './components/console/ConsoleTransportation.vue';
   import GraphTransportationCostRate from './components/graphs/GraphTransportationCostRate.vue';
   import ConsoleProductionPlan from './components/console/ConsoleProductionPlan.vue';
+  import ConsoleFrame from './components/console/ConsoleFrame.vue';
   import ConsolePricePlan from './components/console/ConsolePricePlan.vue';
   import GraphPeriodTrend from './components/graphs/GraphPeriodTrend.vue';
+
   import {
     A, B,C,D,
     MY_PRICES, 
@@ -37,6 +39,8 @@
     MARKET_SCALE_HISTORY_LIST,
     MARKET_SCALE_MONEY_HISTORY_LIST,
     TIME_SEQ_DATA_LIST,
+    LABOR_PROFIT_PER_HOUR,
+    MACHINE_PROFIT_PER_HOUR,
     totalIncome,
     totalProfit,
     totalInvest
@@ -49,17 +53,7 @@ import { PowerRef } from './enhanceRef';
   const databoardActive = PowerRef('databoardActive','profit');
   const graphBoardActive = PowerRef('graphBoardActive','my');
 
-  function colorClass(v){
-    if(~~v<0){
-      return 'bad'
-    }
-    if(~~v>0){
-      return 'good'
-    }
-    if(~~v==0){
-      return 'info'
-    }
-  }
+  
 
 window.test = ()=>{
   console.log(divideSequence(TIME_SEQ_DATA_LIST.value.saleCount, TIME_SEQ_DATA_LIST.value.marketShare))
@@ -109,35 +103,6 @@ window.test = ()=>{
           </el-tab-pane>
         </el-tabs>
       </div>
-
-      <div class="console">
-        <el-card class="card">
-          <template #header>
-            <el-text>控制台(每期调整)</el-text>
-          </template>
-          <el-divider content-position="left"><el-text size="small">价格策略 </el-text></el-divider>
-          <console-price-plan/>
-          <el-divider content-position="left"><el-text size="small">运输策略（自动）</el-text></el-divider>
-          <console-transportation/>
-          <el-divider content-position="left"><el-text size="small">生产策略 </el-text></el-divider>
-          <console-production-plan/>
-          <el-divider content-position="left" border-style="dashed"></el-divider>
-          <div class="line">
-            <el-text class="cell" size="small">预计投入：</el-text>
-            <el-text size="small" class="bad">{{ formatNumberWithCommas(totalInvest) }}</el-text>
-          </div>
-          <div class="line">
-            <el-text class="cell" size="small">预计收入：</el-text>
-            <el-text size="small" :class="colorClass(totalIncome)">{{ formatNumberWithCommas(totalIncome) }}</el-text>
-          </div>
-          <div class="line">
-            <el-text class="cell" size="small">预计利润：</el-text>
-            <el-text size="small" :class="colorClass(totalProfit)">{{ formatNumberWithCommas(totalProfit) }}</el-text>
-          </div>
-          
-        </el-card>
-      </div>
-
       <div class="market">
         <el-tabs v-model="databoardActive" type="border-card" class="card">
           <template #header>
@@ -175,6 +140,10 @@ window.test = ()=>{
             <product-market-card unit="%" colored="auto" readonly :config="PROFIT_NET_RATE"/>
             <el-divider content-position="left"><el-text size="small">单件毛利 </el-text></el-divider>
             <product-market-card readonly colored="auto" :config="PROFIT_NET"/>
+            <el-divider content-position="left"><el-text size="small">单位工时利润 </el-text></el-divider>
+            <product-market-card readonly colored="auto" :config="LABOR_PROFIT_PER_HOUR"/>
+            <el-divider content-position="left"><el-text size="small">单位机时利润 </el-text></el-divider>
+            <product-market-card readonly colored="auto" :config="MACHINE_PROFIT_PER_HOUR"/>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -204,6 +173,10 @@ window.test = ()=>{
           </el-tab-pane>
         </el-tabs>
       </div>
+
+    </div>
+    <div class="divderpan">
+      <el-divider content-position="center"><el-text>时间序列数据（需上传CSV文件）</el-text></el-divider>
 
     </div>
     <div class="timeline">
@@ -253,17 +226,29 @@ window.test = ()=>{
       </div>
     </div>
   </div>
-  
+  <console-frame></console-frame>
 </template>
 
 
 
 <style scoped>
+
+.divderpan{
+  width:100%;
+  padding: 20px 0;
+  background: #fff;
+    border-radius: 5px;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-self: stretch;
+}
 .container{
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 400px;
 }
 .data{
   display: flex;
@@ -278,7 +263,7 @@ window.test = ()=>{
   grid-gap: 10px;
 }
 .timeline>.graph{
-  width: 400px;
+  width: 380px;
   height:350px
 }
 .line{

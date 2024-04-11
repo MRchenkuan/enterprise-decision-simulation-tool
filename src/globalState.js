@@ -1,5 +1,5 @@
 import { ref, watch, watchEffect } from 'vue';
-import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber, sumRows, timesArrays, sumArray, formatNumberWithCommas, sum2DArray} from './tools.js'
+import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber, sumRows, timesArrays, sumArray, formatNumberWithCommas, sum2DArray, divideArrays} from './tools.js'
 import { PowerRef } from './enhanceRef.js';
 
 
@@ -171,6 +171,11 @@ export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIS
 export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
 export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
 
+// 单位时间利润
+export const LABOR_PROFIT_PER_HOUR = ref({})// 人工
+export const MACHINE_PROFIT_PER_HOUR = ref({})// 机器
+
+
 const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
 
 watchEffect(()=>{
@@ -305,4 +310,14 @@ watchEffect(()=>{
 
 watchEffect(()=>{
   totalProfit.value = totalIncome.value-totalInvest.value
+})
+
+watchEffect(()=>{
+  const f = PROFIT_NET.value;
+  const labalCost = [A,B,C,D].map(it=>it.value.laborCost)
+  const machineCost = [A,B,C,D].map(it=>it.value.machineCost)
+  Object.keys(f).map((k,i)=>{
+    LABOR_PROFIT_PER_HOUR.value[k] = f[k].map(ele=>ele/labalCost[i])
+    MACHINE_PROFIT_PER_HOUR.value[k] = f[k].map(ele=>ele/machineCost[i])
+  })
 })
