@@ -18,11 +18,9 @@ import {
   minTransportCostRate,
   MIN_DELIVERY_COUNT, 
   TRANSPORTATION_PLAN , 
-  PRODUCTION_PLAN,
-  PERIOD_DATA, laborCount, machineCount,COST_PRODUCE} from '../../globalState';
+  PRODUCTION_PLAN, laborCount, machineCount,COST_PRODUCE} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
 // 1. 现根据当前生产计划计算每件生产消耗
 // 2. 对每件生产消耗计算汇总算出总消耗

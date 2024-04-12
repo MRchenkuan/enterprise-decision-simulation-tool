@@ -13,7 +13,12 @@ export function divideSequence(d1,d2){
 
 // 两个标签矩阵相除
 export function divideMatrix(m1, m2) {
-  const _m = {}
+  const _m = {
+    A:[],
+    B:[],
+    C:[],
+    D:[]
+  };
   Object.keys(m1).map(key=>{
     _m[key] = divideArrays(m1[key],m2[key])
   })
@@ -22,20 +27,27 @@ export function divideMatrix(m1, m2) {
 
 // 两个等长数组相除
 export function divideArrays(m1,m2){
-  let result = [];
+  let result = [0,0,0,0];
   for (let i = 0; i < m1.length; i++) {
     if(parseFloat(m1[i])===0 || parseFloat(m2[i])===0){
-        result.push(0);
+        result[i] = 0;
       } else {
-        result.push((m1[i] / m2[i]));
+        const _r = m1[i] / m2[i]
+        result[i] = isNaN(_r)?0:_r;
       }
   }
+  
   return result;
 } 
 
 
 export function timesMatrix(m1, m2) {
-  const _m = {}
+  const _m = {
+    A:[],
+    B:[],
+    C:[],
+    D:[]
+  };
   Object.keys(m1).map(key=>{
     _m[key] = timesArrays(m1[key]||[],m2[key]||[])
   })
@@ -43,7 +55,12 @@ export function timesMatrix(m1, m2) {
 }
 
 export function processMatrix(m1,processor){
-  const _m = {}
+  const _m = {
+    A:[],
+    B:[],
+    C:[],
+    D:[]
+  }
   Object.keys(m1).map(key=>{
     _m[key] = m1[key].map(processor);
   })
@@ -51,7 +68,12 @@ export function processMatrix(m1,processor){
 }
 
 export function processMatrixes(m1, m2, processor) {
-  const _m = {};
+  const _m = {
+    A:[],
+    B:[],
+    C:[],
+    D:[]
+  }
   Object.keys(m1).forEach(key => {
     const _a = [];
     const arr1 = m1[key];
@@ -65,7 +87,12 @@ export function processMatrixes(m1, m2, processor) {
 }
 
 export function timesMatrixByNumber(m1, a) {
-  const _m = {}
+  const _m = {
+    A:[],
+    B:[],
+    C:[],
+    D:[]
+  }
   Object.keys(m1).map(key=>{
     _m[key] = m1[key].map(it=>it*a);
   })
@@ -368,4 +395,51 @@ export function colorClass(v){
   if(~~v==0){
     return 'info'
   }
+}
+
+export function copyLastElement(data){
+  if(data && data.length>0){
+    return JSON.parse(JSON.stringify(data[data.length-1]))
+  } else {
+    return {}
+  }
+}
+
+
+export function convertToNumber(str) {
+  // 使用 isNaN() 函数检测是否为数字
+  if (!isNaN(str)) {
+    // 如果是数字，则转换为数字并返回
+    return parseFloat(str);
+    // 如果你需要整数，则可以使用 parseInt() 函数
+    // return parseInt(str);
+  }
+  // 如果不是数字，则原样返回字符串
+  return str;
+}
+
+export function checkMapStruct(obj) {
+  if(!isObject(obj)) return false;
+  // 检查对象是否具有四个键
+  if (Object.keys(obj).length !== 4) {
+    return false;
+  }
+
+  // 检查对象的每个键是否满足条件
+  return Object.keys(obj).every(key => ['A', 'B', 'C', 'D'].includes(key) && Array.isArray(obj[key]));
+}
+
+
+export function newStructure(){
+  return {
+    A:[0,0,0,0],
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0],
+  }
+}
+
+
+export function isObject(variable) {
+  return typeof variable === 'object' && variable !== null;
 }

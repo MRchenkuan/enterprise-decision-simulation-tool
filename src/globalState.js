@@ -1,5 +1,5 @@
 import { ref, watch, watchEffect } from 'vue';
-import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber, sumRows, timesArrays, sumArray, formatNumberWithCommas, sum2DArray, divideArrays} from './tools.js'
+import { processMatrix,processMatrixes,divideMatrix, timesMatrix, checkNumbers, plusMatrix, produceCostCalc, minusMatrixArray, minusMatrix,timesMatrixByNumber, sumRows, timesArrays, sumArray, formatNumberWithCommas, sum2DArray, divideArrays, copyLastElement, checkMapStruct, newStructure} from './tools.js'
 import { PowerRef } from './enhanceRef.js';
 
 
@@ -48,10 +48,10 @@ export const D = PowerRef('D',{
 })
 
 export const MY_PRICES = PowerRef('MY_PRICES',{
-  A:[4500, 4500,4500,4500],
-  B:[4500, 4500,4500,4500],
-  C:[4500, 4500,4500,4500],
-  D:[4500, 4500,4500,4500],
+  A:[6500, 6500,6500,6500],
+  B:[8000, 8000,8000,8000],
+  C:[9500, 9500,9500,9500],
+  D:[11000, 11000,11000,11000],
 })
 
 export const TRANSPORTATION_PLAN = PowerRef('TRANSPORTATION_PLAN',{
@@ -210,7 +210,7 @@ export const totalIncome = ref(0)
 export const totalProfit = ref(0)
 export const totalInvest = ref(0)
 
-export const minTransportCostRate = PowerRef('minTransportCostRate','0.08')
+export const minTransportCostRate = PowerRef('minTransportCostRate',0.08)
 // 最大人工数
 export const laborCount = PowerRef('laborCount','220.75');
 // 最大机器数
@@ -226,42 +226,41 @@ export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIS
 
 // 文件导入相关
 export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
-export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
+// export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
+export const TIME_SEQ_DATA_LIST = ref({})
 
 
 
 const { myOrder, myMarketKeep} = PERIOD_DATA.value;
 const { marketShare, saleCount, requirementCount, orderCount } = TIME_SEQ_DATA_LIST.value; 
 
-function getCurrentPeriodData(data){
-  if(data && data.length>0){
-    return data[data.length-1]
-  } else {
-    return {}
-  }
-}
 
 watchEffect(()=>{
-  const _saleCount = getCurrentPeriodData(saleCount);
-  const _marketShare = getCurrentPeriodData(marketShare);
+  const _saleCount = copyLastElement(saleCount);
+  const _marketShare = copyLastElement(marketShare);
   
   try{
 
     MARKET_CAPACITY.value = divideMatrix(_saleCount, _marketShare);
     MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
-    MARKET_SHARE_MY.value = getCurrentPeriodData(marketShare);
+    checkMapStruct(marketShare) && (MARKET_SHARE_MY.value = copyLastElement(marketShare));
   }catch(e){
     debugger
   }
 })
 
 watchEffect(()=>{
-  PERIOD_DATA.value.myOrder = minusMatrix(getCurrentPeriodData(orderCount), myMarketKeep)
-  PERIOD_DATA.value.mySaleCount = getCurrentPeriodData(saleCount);
+  checkMapStruct(orderCount) && (PERIOD_DATA.value.myOrder = minusMatrix(copyLastElement(orderCount), myMarketKeep))
+  checkMapStruct(saleCount) && (PERIOD_DATA.value.mySaleCount = copyLastElement(saleCount));
 })
 
 watchEffect(()=>{
-  REQUIREMENT_NET.value = plusMatrix(minusMatrix(getCurrentPeriodData(orderCount), myMarketKeep), getCurrentPeriodData(requirementCount));
+  const { marketShare, saleCount, requirementCount, orderCount } = TIME_SEQ_DATA_LIST.value; 
+  const myOrder = copyLastElement(orderCount)
+  const myPureOder = minusMatrix(myOrder, myMarketKeep);
+  const myRequirement = copyLastElement(requirementCount)
+  const reqNet = plusMatrix(myPureOder,myRequirement);
+  REQUIREMENT_NET.value = checkMapStruct(reqNet)?reqNet: newStructure()
 })
 
 
@@ -281,7 +280,6 @@ watchEffect(()=>{
   PROFIT_GROSS.value=minusMatrixArray(MY_PRICES.value, COST_PRODUCE_DYNAMIC.value, true)
   // 毛利率
   PROFIT_GROSS_RATE.value = divideMatrix(PROFIT_GROSS.value, MY_PRICES.value)
-  
   // 净利润
   PROFIT_NET.value = minusMatrix(PROFIT_GROSS.value, TRANSPORTATION_COST_DYNAMIC.value)
   // 净利率

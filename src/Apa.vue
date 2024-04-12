@@ -42,7 +42,7 @@ import { plusMatrix, sumRows,formatNumberWithCommas, divideSequence } from './to
 import { PowerRef } from './enhanceRef';
 
   const activeName = PowerRef('activeName','A');
-  const configPanelActive = PowerRef('configPanelActive','daily');
+  const configPanelActive = PowerRef('configPanelActive','global');
   const databoardActive = PowerRef('databoardActive','profit');
 
   
@@ -61,8 +61,8 @@ window.test = ()=>{
           <el-tab-pane name="global">
             <template #label>
               <div class="tabtag">
-                <el-text>全局配置</el-text>
-                <el-text size="small">(首次开始时配置一次)</el-text>
+                <el-text type="success"><el-icon><StarFilled /></el-icon> 全局配置</el-text>
+                <el-text type="success" size="small">(首次开始时配置一次)</el-text>
               </div>
             </template>
             <el-alert title="一次性配置，根据比赛界信息配置完毕即可" description="" type="warning" :closable="false" show-icon />
@@ -85,29 +85,18 @@ window.test = ()=>{
           <el-tab-pane name="daily">
             <template #label>
               <div class="tabtag">
-                <el-text class="title" type="success"><el-icon><StarFilled /></el-icon>每期数据</el-text>
-                <el-text class="title" type="success" size="small">(每期开始时维护)</el-text>
+                <el-text class="title">当期市场存货</el-text>
+                <el-text class="title" size="small">(嫌麻烦可以不维护)</el-text>
               </div>
 
             </template>
-            <el-alert title="根据比赛实况更新下述数据以获得最佳结果" type="warning" :closable="false" show-icon />
+            <el-alert title="市场可能存在上期存货，净需求要扣减掉" type="warning" :closable="false" show-icon />
             <console-daily-data-updata :data="PERIOD_DATA" />
           </el-tab-pane>
         </el-tabs>
       </div>
       <div class="market">
         <el-tabs v-model="databoardActive" type="border-card" class="card">
-          <el-tab-pane name="market">
-            <template #label>
-              <el-text class="title"><el-icon><PieChart /></el-icon> 市场相关</el-text>
-            </template>
-            <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
-            <product-market-card readonly unit="%" :config="MARKET_SHARE_MY"/> 
-            <el-divider content-position="left"><el-text size="small">全市场销量总和</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_CAPACITY" :extra="sumRows(Object.values(MARKET_CAPACITY))" colored2="info"/>
-            <el-divider content-position="left"><el-text size="small">市场规模(单位：{{ MARKET_SCALE.unit }})</el-text></el-divider>
-            <product-market-card readonly :config="MARKET_SCALE.result"/>
-          </el-tab-pane>
           <el-tab-pane name="cost">
             <template #label>
               <el-text class="title"><el-icon><List /></el-icon> 成本相关</el-text>
@@ -121,7 +110,7 @@ window.test = ()=>{
             <template #label>
               <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">市场对我的净需求</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉没卖掉的存货）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
             <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
@@ -216,11 +205,10 @@ window.test = ()=>{
     align-self: stretch;
 }
 .container{
-  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  padding-bottom: 400px;
+  padding: 200px 400px 400px 250px;
 }
 .data{
   display: flex;

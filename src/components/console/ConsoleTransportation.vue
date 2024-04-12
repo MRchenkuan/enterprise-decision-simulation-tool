@@ -2,12 +2,11 @@
 import { ref, watch, watchEffect, reactive } from 'vue'
 import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit,roundToDecimal, formatNumberWithCommas } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
+import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
-const demand = PowerRef('demand',['mincost'])
+const demand = PowerRef('demand',['marketdemand'])
 const conditions = ref({})
 const dynamicCost = ref(0)
 const fixedCost = ref(0)

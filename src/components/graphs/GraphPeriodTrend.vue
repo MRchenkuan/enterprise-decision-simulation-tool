@@ -25,12 +25,14 @@
   )
 
   const props = defineProps({
-    data:Array,
+    data:{
+      type:Array,
+      default:[]
+    },
     percent:Boolean,
     height:Number,
     autoUnit:Boolean
   })
-  
   const data = ref({
     labels: props.data.map((it,id)=>`第${id+1}期`),
     datasets: createProductMarketDataset(props.data),

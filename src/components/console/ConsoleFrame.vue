@@ -157,7 +157,7 @@ const zhedie = ref(false);
     margin: 0;
   }
   .panels{
-    border-radius: 0 15px 15px 15px;
+    border-radius: 15px 0 15px 15px;
     border: 1px solid #9e9e9e;
     box-shadow: 0 0 10px 0px #9e9e9e;
     background-color: #fff;
@@ -170,8 +170,8 @@ const zhedie = ref(false);
   }
   .header{
     display: flex;
-    flex-direction: row;
-    align-self: flex-start;
+    flex-direction: row-reverse;
+    align-self: flex-end;
   }
   .header .toollet:not(.zanshangma):hover{
     padding-bottom: 20px;

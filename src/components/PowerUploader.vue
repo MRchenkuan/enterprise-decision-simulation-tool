@@ -5,6 +5,7 @@ import {
   PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE,
   TIME_SEQ_DATA_LIST,
 } from "../globalState";
+import { convertToNumber } from "../tools";
 
 function fileProcess(e){
   const reader = new FileReader();
@@ -13,8 +14,10 @@ function fileProcess(e){
     const result = reader.result;
     let lines = result.split("\n");
     lines.map(function (item, index) {
-      let line = item.split(",");        
-        data.push(line);
+      let line = item.split(",");    
+        data.push(line.map(it=>{
+          return it!==''?convertToNumber(it):it
+        }));
     });
     PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value = data;
   };

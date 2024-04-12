@@ -1,16 +1,16 @@
 <script setup>
 import { ref, watch, watchEffect, reactive } from 'vue'
-import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes } from '../../tools';
+import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, copyLastElement, checkMapStruct } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { COST_PRODUCE, PERIOD_DATA, MY_PRICES, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
+import { COST_PRODUCE, MY_PRICES, TRANSPORTATION_COST_DYNAMIC,TIME_SEQ_DATA_LIST} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
 
 const grossProfit = PowerRef('grossProfit', 0.01);
 
-const MY_PRICES_CACHED = PowerRef('MY_PRICES_CACHED',{})
+const MY_PRICES_CACHED = PowerRef('MY_PRICES_CACHED',null)
+const resetBtnState = ref(false)
 
 watch(grossProfit,()=>{
   let cost = {};
@@ -24,43 +24,56 @@ watch(grossProfit,()=>{
 })
 
 function save(){
-  MY_PRICES_CACHED.value = MY_PRICES.value
+  MY_PRICES_CACHED.value = MY_PRICES.value;
 }
 
 function reset(){
   MY_PRICES.value = MY_PRICES_CACHED.value
 }
 
+watchEffect(()=>{
+  const { marketShare, saleCount, requirementCount, orderCount,price } = TIME_SEQ_DATA_LIST.value; 
+  if(checkMapStruct(price)){
+    MY_PRICES.value = copyLastElement(price)
+  }
+})
 
+watchEffect(()=>{
+  if(!MY_PRICES_CACHED.value){
+    resetBtnState.value = false;
+  } else {
+    resetBtnState.value = true
+  }
+})
 
 function formattooltip(v){
   return (v*100).toFixed(0)+'%'
 }
 
 const marks = reactive({
-  0.1: {
+  0.2: {
     style: {
       color: '#F56C6C',
       top: "-40px",
       fontSize:"12px"
     },
-    label: '10%',
+    label: '20%',
   },
-  0.25: {
+  0.4: {
     style: {
       fontSize:"12px",
       color: '#67C23A',
       top: "-40px"
     },
-    label: '25%',
+    label: '40%',
   },
-  0.4: {
+  0.6: {
     style: {
       fontSize:"12px",
       color: '#F56C6C',
       top: "-40px"
     },
-    label: '40%',
+    label: '60%',
   },
 })
 
@@ -74,7 +87,7 @@ const marks = reactive({
       <el-text class="linetitle" size="small">成本利率</el-text>
       <el-slider size="small" :min="0.01" :max="1" :step="0.01" v-model="grossProfit" :format-tooltip="formattooltip" :marks="marks" />
       <el-button class="btn" type="primary" size="small" @click="save">保存</el-button>
-      <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
+      <el-button class="btn" type="primary" :disabled="!resetBtnState" size="small" @click="reset">复原</el-button>
     </div>
   </div>
   <product-market-card :step="100" controls :readonly="false" :config="MY_PRICES"/>
