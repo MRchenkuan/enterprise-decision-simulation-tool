@@ -4,47 +4,47 @@ import { PowerRef } from './enhanceRef.js';
 
 
 export const A = PowerRef('A',{
-  manageCost:[5000, 6000],
+  manageCost:[11600, 13600],
   hours:[8,4,8,4],
-  materialCost:700,
-  machineCost:100,
-  laborCost:200,
-  hourPay: [11,14,13,17],
+  materialCost:850,
+  machineCost:160,
+  laborCost:75,
+  hourPay: [28,43,40,55],
   hourRemain:[520,260,520,260],
-  machinePay:7.65
+  machinePay:12.21
 })
 
 export const B = PowerRef('B',{
-  manageCost:[6000, 7000],
+  manageCost:[14400, 16700],
   hours:[8,4,8,4],
-  materialCost:1200,
-  machineCost:160,
-  laborCost:250,
-  hourPay: [11,14,13,17],
+  materialCost:1600,
+  machineCost:273,
+  laborCost:101,
+  hourPay: [28,43,40,55],
   hourRemain:[520,260,520,260],
-  machinePay:7.65
+  machinePay:12.21
 })
 
 export const C = PowerRef('C',{
-  manageCost:[7000, 8000],
+  manageCost:[16700, 19400],
   hours:[8,4,8,4],
-  materialCost:1800,
-  machineCost:450,
-  laborCost:280,
-  hourPay: [11,14,13,17],
+  materialCost:2810,
+  machineCost:405,
+  laborCost:135,
+  hourPay: [28,43,40,55],
   hourRemain:[520,260,520,260],
-  machinePay:7.65
+  machinePay:12.21
 })
 
 export const D = PowerRef('D',{
-  manageCost:[8000, 9000],
+  manageCost:[19500, 21700],
   hours:[8,4,8,4],
-  materialCost:3200,
-  machineCost:640,
-  laborCost:320,
-  hourPay: [11,14,13,17],
+  materialCost:3980,
+  machineCost:511,
+  laborCost:135,
+  hourPay: [28,43,40,55],
   hourRemain:[520,260,520,260],
-  machinePay:7.65
+  machinePay:12.21
 })
 
 export const MY_PRICES = PowerRef('MY_PRICES',{
@@ -71,17 +71,17 @@ export const PRODUCTION_PLAN = PowerRef('PRODUCTION_PLAN',{
 
 // 物流
 export const TRANSPORTATION_COST_FIXED = PowerRef('TRANSPORTATION_COST_FIXED',{
-  A:[1800,600,3800,4800],
-  B:[9000, 5000,12000,13000],
-  C:[13600, 9800,15500,16600],
-  D:[12800, 16600,18800,19800],
+  A:[2128,1972,3700,3700],
+  B:[6417, 6083,11000,11000],
+  C:[9283, 8817,14000,14100],
+  D:[12222, 11778,19100,19100],
 })
 
 export const TRANSPORTATION_COST_DYNAMIC = PowerRef('TRANSPORTATION_COST_DYNAMIC',{
-  A:[220,180,300,300],
-  B:[450, 350,500,500],
-  C:[700, 500,800,800],
-  D:[900, 700,1000,1000],
+  A:[349,331,450,450],
+  B:[456, 424,630,630],
+  C:[687, 633,890,890],
+  D:[810, 730,1110,1110],
 })
 
 //我的净需求
@@ -225,7 +225,8 @@ export const MARKET_SCALE_MONEY_HISTORY_LIST= PowerRef('MARKET_SCALE_MONEY_HISTO
 export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
 // 文件导入相关
-export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
+// export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
+export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE =  ref([])
 // export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
 export const TIME_SEQ_DATA_LIST = ref({})
 

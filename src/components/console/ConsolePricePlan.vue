@@ -32,9 +32,10 @@ function reset(){
 }
 
 watchEffect(()=>{
-  const { marketShare, saleCount, requirementCount, orderCount,price } = TIME_SEQ_DATA_LIST.value; 
-  if(checkMapStruct(price)){
-    MY_PRICES.value = copyLastElement(price)
+  const { marketShare, saleCount, requirementCount, orderCount,price } = TIME_SEQ_DATA_LIST.value;
+  const p = copyLastElement(price)
+  if(checkMapStruct(p)){
+    MY_PRICES.value = p
   }
 })
 
