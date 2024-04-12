@@ -1,8 +1,6 @@
 <script setup>
 import { ref,watch, defineEmits, watchEffect } from "vue"
-import { PowerRef } from "../enhanceRef";
 import { 
-  MY_MARKET_REQUIREMENT_HISTORY_LIST,
   PERIOD_DATA_HISTORY_LIST,
   PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE,
   TIME_SEQ_DATA_LIST,
@@ -19,23 +17,12 @@ function fileProcess(e){
         data.push(line);
     });
     PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value = data;
-    // // 同步需求历史
-    // const hisList = processData(data, 'requirementCount');
-    // MY_MARKET_REQUIREMENT_HISTORY_LIST.value = hisList;
-    // console.log(PERIOD_DATA_HISTORY_LIST)
   };
 
   reader.readAsText(e);
 }
 
 watchEffect(()=>{
-  // const PERIOD_DATA = {
-  //   chanpionMarketRate:{A,B,C,D},
-  //   chanpionSaleCount:{A,B,C,D},
-  //   myMarketRequirement:{A,B,C,D},
-  //   myOrder:{A,B,C,D},
-  //   mySaleCount:{A,B,C,D},
-  // }
   const p = PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value;
   const map = {};
   ;[

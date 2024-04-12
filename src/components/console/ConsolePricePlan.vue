@@ -5,7 +5,7 @@ import ProductMarketCard from '../ProductMarketCard.vue';
 import { COST_PRODUCE, PERIOD_DATA, MY_PRICES, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
+const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
 
 const grossProfit = PowerRef('grossProfit', 0.01);

@@ -86,11 +86,11 @@ const GRAPH_OPTS = ref({
       callbacks: {
         label: (v)=>{
           if(props.percent){
-            return (v.parsed.y*100).toFixed(1) + '%'
+            return `[${v.dataset.label}]：${(v.parsed.y*100).toFixed(1)}%`
           }else if(props.autoUnit){
-            return formatNumber(v.parsed.y, 1)
+            return `[${v.dataset.label}]：${formatNumber(v.parsed.y, 1)}`
           } else {
-            return (v.parsed.y).toFixed(0)
+            return `[${v.dataset.label}]：${(v.parsed.y).toFixed(0)}`
           }
         },
       }
@@ -100,7 +100,7 @@ const GRAPH_OPTS = ref({
       labels: {
         usePointStyle: true,
         font:{
-          size:4.5
+          size:10
         }
       },
       position:"bottom"

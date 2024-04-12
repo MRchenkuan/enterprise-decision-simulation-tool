@@ -5,7 +5,7 @@ import ProductMarketCard from '../ProductMarketCard.vue';
 import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN , PERIOD_DATA, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
+const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
 const demand = PowerRef('demand',['mincost'])
 const conditions = ref({})

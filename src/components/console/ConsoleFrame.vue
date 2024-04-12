@@ -17,8 +17,8 @@ const zhedie = ref(false);
   <div class="frame">
     <div class="header">
       <div v-if="!zanshangColosed" class="zanshangma toollet" @mouseenter="begmeactive=true" @mouseleave="begmeactive=false">
-        <el-text :class="{begme:true,begmeactive}">请他喝杯咖啡！☕️</el-text>
-        <el-image :class={zsmimg:true,begmeactive} :src="zanshangma" :fit="fit" />
+        <el-text :class="{begme:true,begmeactive}">请他喝咖啡！☕️</el-text>
+        <el-image :class={zsmimg:true,begmeactive} :src="zanshangma" />
         <el-icon v-if="begmeactive" @click="zanshangColosed=true" class="closeicon"><CircleCloseFilled /></el-icon>
       </div>
       <div class="summary toollet">
@@ -68,7 +68,6 @@ const zhedie = ref(false);
 
 <style scoped>
 .uploadfile{
-    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center!important;
@@ -77,6 +76,7 @@ const zhedie = ref(false);
     border-color: #fff!important;
 }
 .uploadfile .btn{
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,8 +127,8 @@ const zhedie = ref(false);
   }
 
   .zsmimg{
-    width: 70px;
-    height: 70px;
+    width: 55px;
+    height: 55px;
     transition: all 200ms ease;
   }
   .zsmimg.begmeactive{
@@ -157,7 +157,7 @@ const zhedie = ref(false);
     margin: 0;
   }
   .panels{
-    border-radius: 0 5px 5px 5px;
+    border-radius: 0 15px 15px 15px;
     border: 1px solid #9e9e9e;
     box-shadow: 0 0 10px 0px #9e9e9e;
     background-color: #fff;

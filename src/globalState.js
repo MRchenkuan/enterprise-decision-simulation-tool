@@ -100,11 +100,11 @@ export const PERIOD_DATA = PowerRef('PERIOD_DATA',{
     C:[0, 0,0,0],
     D:[0, 0,0,0],
   },
-  myMarketRequirement:{
-    A:[150,150,30,30],
-    B:[96, 96,132,132],
-    C:[10, 10,10,10],
-    D:[10, 10,10,10],
+  myMarketKeep:{
+    A:[0,0,0,0],
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0],
   },
   mySaleCount:{
     A:[150,150,0,0],
@@ -112,18 +112,6 @@ export const PERIOD_DATA = PowerRef('PERIOD_DATA',{
     C:[0, 0,0,0],
     D:[0, 0,0,0],
   },
-  chanpionSaleCount:{
-    A:[150,150,0,0],
-    B:[96, 96,132,132],
-    C:[0, 0,0,0],
-    D:[0, 0,0,0],
-  },
-  chanpionMarketRate:{
-    A:[.1,.1,.1,.1],
-    B:[.2,.2,.2,.2],
-    C:[.3,.3,.3,.3],
-    D:[.4,.4,.4,.4],
-  }
 })
 // 周期历史
 export const PERIOD_DATA_HISTORY_LIST = PowerRef('PERIOD_DATA_HISTORY_LIST',[])
@@ -131,22 +119,91 @@ export const PERIOD_DATA_HISTORY_LIST = PowerRef('PERIOD_DATA_HISTORY_LIST',[])
 
 
 /* 市场占有率 */
-export const MARKET_CAPACITY = ref(0) // 数量
-export const MARKET_SCALE = ref(0) //价格
-export const MARKET_SHARE_MY = ref(0)
+export const MARKET_CAPACITY = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+}) // 数量
+export const MARKET_SCALE = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+}) //价格
+export const MARKET_SHARE_MY = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 
 /* 成本 */
-export const COST_PRODUCE = ref(0); // 单品单车间成本矩阵
-export const COST_PRODUCE_DYNAMIC = ref(0); // 根据产量实时计算单品平均成本
-export const COST_FINAL = ref(0);
+export const COST_PRODUCE = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+}); // 单品单车间成本矩阵
+export const COST_PRODUCE_DYNAMIC = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+}); // 根据产量实时计算单品平均成本
+export const COST_FINAL = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+});
 /* 毛利润 */
-export const PROFIT_GROSS = ref(0)
-export const PROFIT_GROSS_RATE = ref(0)
+export const PROFIT_GROSS = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+export const PROFIT_GROSS_RATE = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 /* 净利润 */
-export const PROFIT_NET = ref(0)
-export const PROFIT_NET_RATE = ref(0)
+export const PROFIT_NET = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+export const PROFIT_NET_RATE = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 // 最小配送统计
-export const MIN_DELIVERY_COUNT = ref(0);
+export const MIN_DELIVERY_COUNT = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+});
+// 单位时间利润
+export const LABOR_PROFIT_PER_HOUR = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})// 人工
+export const MACHINE_PROFIT_PER_HOUR = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})// 机器
+
 
 // 总收入、盈利、投入
 export const totalIncome = ref(0)
@@ -171,26 +228,40 @@ export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIS
 export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
 export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
 
-// 单位时间利润
-export const LABOR_PROFIT_PER_HOUR = ref({})// 人工
-export const MACHINE_PROFIT_PER_HOUR = ref({})// 机器
 
 
-const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
+const { myOrder, myMarketKeep} = PERIOD_DATA.value;
+const { marketShare, saleCount, requirementCount, orderCount } = TIME_SEQ_DATA_LIST.value; 
+
+function getCurrentPeriodData(data){
+  if(data && data.length>0){
+    return data[data.length-1]
+  } else {
+    return {}
+  }
+}
 
 watchEffect(()=>{
+  const _saleCount = getCurrentPeriodData(saleCount);
+  const _marketShare = getCurrentPeriodData(marketShare);
+  
   try{
 
-    MARKET_CAPACITY.value = divideMatrix(chanpionSaleCount, chanpionMarketRate);
+    MARKET_CAPACITY.value = divideMatrix(_saleCount, _marketShare);
     MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
-    MARKET_SHARE_MY.value = divideMatrix(mySaleCount, MARKET_CAPACITY.value);
+    MARKET_SHARE_MY.value = getCurrentPeriodData(marketShare);
   }catch(e){
+    debugger
   }
-
 })
 
 watchEffect(()=>{
-  REQUIREMENT_NET.value = plusMatrix(myOrder, myMarketRequirement);
+  PERIOD_DATA.value.myOrder = minusMatrix(getCurrentPeriodData(orderCount), myMarketKeep)
+  PERIOD_DATA.value.mySaleCount = getCurrentPeriodData(saleCount);
+})
+
+watchEffect(()=>{
+  REQUIREMENT_NET.value = plusMatrix(minusMatrix(getCurrentPeriodData(orderCount), myMarketKeep), getCurrentPeriodData(requirementCount));
 })
 
 
@@ -236,34 +307,6 @@ function debounce(func, delay) {
       }, delay);
   };
 }
-
-watchEffect(()=>{
-  MY_ORDER_HISTORY_LIST.value= [];// 存订货
-  MY_MARKET_REQUIREMENT_HISTORY_LIST.value = [];// 市场对我的需求
-  MY_SALE_COUNT_HISTORY_LIST.value= [];// 我的历史销量
-
-  PERIOD_DATA_HISTORY_LIST.value.map(it=>{
-    const {myOrder, myMarketRequirement,mySaleCount,chanpionSaleCount,chanpionMarketRate} = it;
-    // 我相关
-    MY_ORDER_HISTORY_LIST.value.push(myOrder);
-    MY_MARKET_REQUIREMENT_HISTORY_LIST.value.push(myMarketRequirement);
-    MY_SALE_COUNT_HISTORY_LIST.value.push(mySaleCount);
-  })
-})
-watchEffect(()=>{
-  MARKET_SCALE_HISTORY_LIST.value= [];// 市场销量规模历史
-  MY_MARKET_SHARE_HISTORY_LIST.value= [];// 我的市占历史
-  MARKET_SCALE_MONEY_HISTORY_LIST.value= [];// 我的市占历史
-
-  PERIOD_DATA_HISTORY_LIST.value.map(it=>{
-    const {myOrder, myMarketRequirement,mySaleCount,chanpionSaleCount,chanpionMarketRate} = it;
-    // 市场相关
-    const marketTotleSaleCount = divideMatrix(chanpionSaleCount, chanpionMarketRate)
-    MARKET_SCALE_HISTORY_LIST.value.push(marketTotleSaleCount)
-    MY_MARKET_SHARE_HISTORY_LIST.value.push(divideMatrix(mySaleCount, MARKET_CAPACITY.value))
-    MARKET_SCALE_MONEY_HISTORY_LIST.value.push(timesMatrix(marketTotleSaleCount, MY_PRICES.value))
-  })
-})
 
 watchEffect(()=>{
   const avgPrices = sumRows(Object.values(MY_PRICES.value)).map(it=>it/4)

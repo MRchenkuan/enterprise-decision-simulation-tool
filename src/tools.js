@@ -2,6 +2,9 @@ import solver from 'javascript-lp-solver'
 
 // 两个序列相除
 export function divideSequence(d1,d2){
+  if(!(d1&& d1.map)){
+    return []
+  }
   return d1.map((m1, id1)=>{
     const m2 = d2[id1];
     return divideMatrix(m1, m2);
@@ -34,7 +37,7 @@ export function divideArrays(m1,m2){
 export function timesMatrix(m1, m2) {
   const _m = {}
   Object.keys(m1).map(key=>{
-    _m[key] = timesArrays(m1[key],m2[key])
+    _m[key] = timesArrays(m1[key]||[],m2[key]||[])
   })
   return _m;
 }
@@ -294,13 +297,13 @@ export function debounce(func, delay) {
 
 export function createProductMarketDataset(HIS){
   const _datasets = []
-  const map1 = ['产品A','产品B','产品C','产品D'];
-  const map2 = ['市场1','市场2','市场3','市场4'];
+  const map1 = ['A','B','C','D'];
+  const map2 = ['1','2','3','4'];
   const colors = [
-    ['#85ce61','#4e8e2f','#3e6b27','#2d481f'],
-    ['#ebb563','#a77730','#7d5b28','#533f20'],
-    ['#f78989','#b25252','#854040','#582e2e'],
-    ['#a6a9ad','#6b6d71','#525457','#393a3c'],
+    ['#409EFF','#66b1ff','#3375b9','#2a598a'],
+    ['#67C23A','#85ce61','#4e8e2f','#3e6b27'],
+    ['#E6A23C','#ebb563','#a77730','#7d5b28'],
+    ['#F56C6C','#f78989','#b25252','#854040'],
   ]
   const dates = {}
   
@@ -321,8 +324,11 @@ export function createProductMarketDataset(HIS){
       _datasets.push({
         label: `${[map1[i1]]}-${[map2[i2]]}`,
         backgroundColor: colors[i1][i2],
-        borderColor:colors[i1][i2]+'91',
-        data:dates[`${i1}-${i2}`]
+        borderColor:colors[i1][i2],
+        data:dates[`${i1}-${i2}`],
+        // borderWidth:2,
+        // pointRadius:2,
+        // lineTension:0.1
       })
     })
   })

@@ -31,13 +31,6 @@
     PROFIT_NET,
     PROFIT_NET_RATE,
     MIN_DELIVERY_COUNT,
-    PERIOD_DATA_HISTORY_LIST,
-    MY_SALE_COUNT_HISTORY_LIST,
-    MY_MARKET_REQUIREMENT_HISTORY_LIST,
-    MY_ORDER_HISTORY_LIST,
-    MY_MARKET_SHARE_HISTORY_LIST,
-    MARKET_SCALE_HISTORY_LIST,
-    MARKET_SCALE_MONEY_HISTORY_LIST,
     TIME_SEQ_DATA_LIST,
     LABOR_PROFIT_PER_HOUR,
     MACHINE_PROFIT_PER_HOUR,
@@ -51,7 +44,6 @@ import { PowerRef } from './enhanceRef';
   const activeName = PowerRef('activeName','A');
   const configPanelActive = PowerRef('configPanelActive','daily');
   const databoardActive = PowerRef('databoardActive','profit');
-  const graphBoardActive = PowerRef('graphBoardActive','my');
 
   
 
@@ -105,9 +97,6 @@ window.test = ()=>{
       </div>
       <div class="market">
         <el-tabs v-model="databoardActive" type="border-card" class="card">
-          <template #header>
-            <el-text>市场&成本&利润</el-text>
-          </template>
           <el-tab-pane name="market">
             <template #label>
               <el-text class="title"><el-icon><PieChart /></el-icon> 市场相关</el-text>
@@ -147,82 +136,55 @@ window.test = ()=>{
           </el-tab-pane>
         </el-tabs>
       </div>
-      <div class="trend">
-        <el-tabs v-model="graphBoardActive" type="border-card" class="card">
-          <el-tab-pane name="my">
-            <template #label>
-              <el-text class="title"><el-icon><DataLine /></el-icon> 我的趋势</el-text>
-            </template>
-            <el-divider content-position="left"><el-text size="small">我的历史销量</el-text></el-divider>
-            <graph-period-trend :data="MY_SALE_COUNT_HISTORY_LIST"/>
-            <el-divider content-position="left"><el-text size="small">市场对我的需求</el-text></el-divider>
-            <graph-period-trend :data="MY_MARKET_REQUIREMENT_HISTORY_LIST"/>
-            <el-divider content-position="left"><el-text size="small">我的存&订货</el-text></el-divider>
-            <graph-period-trend :data="MY_ORDER_HISTORY_LIST"/>
-          </el-tab-pane>
-          <el-tab-pane name="market">
-            <template #label>
-              <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 市场趋势</el-text>
-            </template>
-            <el-divider content-position="left"><el-text size="small">我的市占</el-text></el-divider>
-            <graph-period-trend :data="MY_MARKET_SHARE_HISTORY_LIST"/>
-            <el-divider content-position="left"><el-text size="small">全市场销量</el-text></el-divider>
-            <graph-period-trend :data="MARKET_SCALE_HISTORY_LIST"/>
-            <el-divider content-position="left"><el-text size="small">市场规模</el-text></el-divider>
-            <graph-period-trend :data="MARKET_SCALE_MONEY_HISTORY_LIST"/>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
 
     </div>
-    <div class="divderpan">
-      <el-divider content-position="center"><el-text>时间序列数据（需上传CSV文件）</el-text></el-divider>
-
-    </div>
-    <div class="timeline">
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">需求量</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.requirementCount"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">销量</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.saleCount"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">价格</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.price"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">库存量</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.storeCount"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">订货</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.orderCount"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">我的市场份额</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.marketShare" percent/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">市场总规模</el-text></el-divider>
-        <graph-period-trend :data="divideSequence(TIME_SEQ_DATA_LIST.saleCount, TIME_SEQ_DATA_LIST.marketShare)"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">研发水平</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.devlevel"/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">我的良率</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.rightRate" percent/>
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">促销费</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.prmtInvest" auto-unit />
-      </div>
-      <div class="graph">
-        <el-divider content-position="left"><el-text size="small">广告投入</el-text></el-divider>
-        <graph-period-trend :data="TIME_SEQ_DATA_LIST.advInvest" auto-unit />
+    <div class="trendpanel">
+      <el-divider content-position="left">趋势数据</el-divider>
+      <div class="timeline">
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">需求量</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.requirementCount"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">销量</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.saleCount"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">市场总销量</el-text></el-divider>
+          <graph-period-trend :data="divideSequence(TIME_SEQ_DATA_LIST.saleCount, TIME_SEQ_DATA_LIST.marketShare)"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">订货</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.orderCount"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">价格</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.price"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">库存量</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.storeCount"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">我的市场份额</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.marketShare" percent/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">研发水平</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.devlevel"/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">我的良率</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.rightRate" percent/>
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">促销费</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.prmtInvest" auto-unit />
+        </div>
+        <div class="graph">
+          <el-divider content-position="left"><el-text size="small">广告投入</el-text></el-divider>
+          <graph-period-trend :data="TIME_SEQ_DATA_LIST.advInvest" auto-unit />
+        </div>
       </div>
     </div>
   </div>
@@ -232,6 +194,16 @@ window.test = ()=>{
 
 
 <style scoped>
+
+.trendpanel{
+  display: flex;
+  flex-direction: column;
+  background:#fff;
+  margin: 18px;
+  padding: 18px;
+  border-radius: 5px;
+  background-color: #fff;
+}
 
 .divderpan{
   width:100%;
@@ -246,18 +218,14 @@ window.test = ()=>{
 .container{
   width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   padding-bottom: 400px;
 }
 .data{
   display: flex;
 }
 .timeline{
-  margin: 18px;
-  border-radius: 5px;
-  padding: 40px 60px;
-  background-color: #fff;
   display: grid;
   grid-template-columns: repeat(3, 0fr);
   grid-gap: 10px;

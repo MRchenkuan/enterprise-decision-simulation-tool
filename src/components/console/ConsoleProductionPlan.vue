@@ -22,7 +22,7 @@ import {
   PERIOD_DATA, laborCount, machineCount,COST_PRODUCE} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
-const {chanpionSaleCount, chanpionMarketRate, mySaleCount, myMarketRequirement, myOrder} = PERIOD_DATA.value;
+const { mySaleCount, myOrder} = PERIOD_DATA.value;
 
 // 1. 现根据当前生产计划计算每件生产消耗
 // 2. 对每件生产消耗计算汇总算出总消耗
@@ -176,10 +176,6 @@ function createSolver(lmRate, maxLR, maxMR){
       <el-text class="cell" size="small">/{{ laborCount }} 人</el-text>
     </div>
   </div>
-  <!-- <el-divider border-style="dashed" /> -->
-  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_machine" :extra2="mechineSum"/> -->
-  <!-- <el-divider border-style="dashed" /> -->
-  <!-- <product-market-card type="produce" :places="1" readonly :config="resources_labor" :extra2="laborSum"/> -->
 </template>
 
 <style scoped>
