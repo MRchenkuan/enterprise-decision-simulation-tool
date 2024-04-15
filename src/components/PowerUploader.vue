@@ -2,7 +2,6 @@
 import { ref,watch, defineEmits, watchEffect } from "vue"
 import { 
   PERIOD_DATA_HISTORY_LIST,
-  PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE,
   TIME_SEQ_DATA_LIST,
 } from "../globalState";
 import { convertToNumber } from "../tools";
@@ -19,31 +18,28 @@ function fileProcess(e){
           return it!==''?convertToNumber(it):it
         }));
     });
-    PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value = data;
+
+    const map = {};
+    ;[
+      'price',
+      'prmtInvest',
+      'advInvest',
+      'devlevel',
+      'requirementCount',
+      'saleCount',
+      'storeCount',
+      'orderCount',
+      'rightRate',
+      'marketShare'
+    ].map(key=>{
+      map[key] = processData(data,key)
+    })
+    TIME_SEQ_DATA_LIST.value = map;
+    TIME_SEQ_DATA_LIST.value.IS_LOAD_WITH_FILE = true;
   };
 
   reader.readAsText(e);
 }
-
-watchEffect(()=>{
-  const p = PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE.value;
-  const map = {};
-  ;[
-    'price',
-    'prmtInvest',
-    'advInvest',
-    'devlevel',
-    'requirementCount',
-    'saleCount',
-    'storeCount',
-    'orderCount',
-    'rightRate',
-    'marketShare'
-  ].map(key=>{
-    map[key] = processData(p,key)
-  })
-  TIME_SEQ_DATA_LIST.value = map;
-})
 
 
 function processData(data, target){

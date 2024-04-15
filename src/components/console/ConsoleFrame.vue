@@ -151,6 +151,7 @@ const zhedie = ref(false);
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    max-width: 100%;
   }
   .divider{
     height: auto;

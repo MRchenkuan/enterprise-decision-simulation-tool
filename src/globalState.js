@@ -85,7 +85,7 @@ export const TRANSPORTATION_COST_DYNAMIC = PowerRef('TRANSPORTATION_COST_DYNAMIC
 })
 
 //我的净需求
-export const REQUIREMENT_NET = ref({
+export const REQUIREMENT_NET = PowerRef('REQUIREMENT_NET',{
   A:[0,0,0,0],
   B:[0,0,0,0],
   C:[0,0,0,0],
@@ -225,10 +225,9 @@ export const MARKET_SCALE_MONEY_HISTORY_LIST= PowerRef('MARKET_SCALE_MONEY_HISTO
 export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
 // 文件导入相关
-// export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE = PowerRef('PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE',[]);
-export const PERIOD_DATA_HISTORY_LIST_BY_DOWNLOADFILE =  ref([])
-// export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
-export const TIME_SEQ_DATA_LIST = ref({})
+export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
+TIME_SEQ_DATA_LIST.value.IS_LOAD_WITH_FILE = false;
+// export const TIME_SEQ_DATA_LIST = ref({})
 
 
 
@@ -261,7 +260,7 @@ watchEffect(()=>{
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
   const reqNet = plusMatrix(myPureOder,myRequirement);
-  REQUIREMENT_NET.value = checkMapStruct(reqNet)?reqNet: newStructure()
+  checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet)
 })
 
 

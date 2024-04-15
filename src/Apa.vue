@@ -45,11 +45,7 @@ import { PowerRef } from './enhanceRef';
   const configPanelActive = PowerRef('configPanelActive','global');
   const databoardActive = PowerRef('databoardActive','profit');
 
-  
 
-window.test = ()=>{
-  console.log(divideSequence(TIME_SEQ_DATA_LIST.value.saleCount, TIME_SEQ_DATA_LIST.value.marketShare))
-}
 
 </script>
 
@@ -209,6 +205,7 @@ window.test = ()=>{
   flex-direction: row;
   align-items: flex-start;
   padding: 200px 400px 400px 250px;
+  background-color: #242424;;
 }
 .data{
   display: flex;

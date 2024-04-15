@@ -24,17 +24,17 @@ watch(grossProfit,()=>{
 })
 
 function save(){
-  MY_PRICES_CACHED.value = MY_PRICES.value;
+  MY_PRICES_CACHED.value = JSON.parse(JSON.stringify(MY_PRICES.value));
 }
 
 function reset(){
-  MY_PRICES.value = MY_PRICES_CACHED.value
+  MY_PRICES.value = JSON.parse(JSON.stringify(MY_PRICES_CACHED.value))
 }
 
 watchEffect(()=>{
-  const { marketShare, saleCount, requirementCount, orderCount,price } = TIME_SEQ_DATA_LIST.value;
+  const { marketShare, saleCount, requirementCount, orderCount,price, IS_LOAD_WITH_FILE } = TIME_SEQ_DATA_LIST.value;
   const p = copyLastElement(price)
-  if(checkMapStruct(p)){
+  if(IS_LOAD_WITH_FILE && checkMapStruct(p)){
     MY_PRICES.value = p
   }
 })
