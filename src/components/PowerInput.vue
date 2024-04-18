@@ -17,7 +17,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:value']);
 
-const innerValue = ref(props.value);
+const innerValue = ref(roundDecimal(props.value));
 // const innerValue = ref(roundDecimal(props.value));
 
 watch(innerValue,(newInnerValue)=>{
@@ -26,7 +26,7 @@ watch(innerValue,(newInnerValue)=>{
 
 // todo 在PowerInput中实现小数点舍入未生效，后续补
 function roundDecimal(v){
-  return roundToDecimal(~~v,props.places);
+  return roundToDecimal(parseFloat(v),props.places);
 }
 
 </script>
@@ -56,6 +56,7 @@ function roundDecimal(v){
     v-model="innerValue" 
     :size="size"
     :disabled="disabled"
+
   />
   <el-input v-else 
     :controls="controls" 

@@ -62,8 +62,8 @@ export const TRANSPORTATION_PLAN = PowerRef('TRANSPORTATION_PLAN',{
 })
 
 export const PRODUCTION_PLAN = PowerRef('PRODUCTION_PLAN',{
-  A:[320,160,0,0],
-  B:[200, 100,0,0],
+  A:[0,0,0,0],
+  B:[0, 0,0,0],
   C:[0, 0,0,0],
   D:[0, 0,0,0],
 })

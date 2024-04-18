@@ -122,7 +122,7 @@ export function plusMatrix(m1, m2) {
 export function plusArrays(m1,m2){
   let result = [];
   for (let i = 0; i < m1.length; i++) {
-    result.push(~~m1[i] + ~~m2[i]);
+    result.push(parseFloat(m1[i]) + parseFloat(m2[i]));
   }
   return result;
 } 
@@ -280,11 +280,11 @@ export function sumRows(matrix) {
   return result;
 }
 
-export function sum2DArray(arr) {
+export function sum2DArray(arr, distanceOnly) {
   let totalSum = 0;
   for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length; j++) {
-          totalSum += ~~arr[i][j];
+          totalSum += (!distanceOnly?~~arr[i][j]:Math.abs(~~arr[i][j]));
       }
   }
   return totalSum;
@@ -299,13 +299,6 @@ export function autoUnit(num) {
       return (num / 100000000).toFixed(1) + "亿";
   }
 }
-
-export function softMax(a, b) {
-  // 平滑处理Math.max 便于求导
-  // return Math.log(Math.exp(a) + Math.exp(b));
-  return Math.max(a,b)
-}
-
 
 export function debounce(func, delay) {
   let timeoutId;
@@ -440,6 +433,71 @@ export function newStructure(){
 }
 
 
-export function isObject(variable) {
-  return typeof variable === 'object' && variable !== null;
+export function cloneDeep(value, map = new WeakMap()) {
+  if (!isObject(value)) {
+    return value;
+  }
+
+  // 处理特殊对象类型
+  if (value instanceof Date) {
+    return new Date(value);
+  }
+
+  if (value instanceof RegExp) {
+    return new RegExp(value.source, value.flags);
+  }
+
+  if (value instanceof Function) {
+    return value;
+  }
+
+  // 避免循环引用
+  if (map.has(value)) {
+    return map.get(value);
+  }
+
+  // 初始化新对象
+  const result = Array.isArray(value) ? [] : {};
+
+  // 将新对象添加到 map 中
+  map.set(value, result);
+
+  // 递归复制属性
+  for (let key in value) {
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      result[key] = cloneDeep(value[key], map);
+    }
+  }
+
+  return result;
+}
+
+// 检测是否为对象
+function isObject(value) {
+  return typeof value === 'object' && value !== null;
+}
+
+
+export function softMax(m){
+  const sum = sum2DArray(Object.values(m), true);
+  if(sum>0){
+    Object.keys(m).map(key=>{
+      for(let i=0;i<m[key].length;i++){
+        m[key][i] = m[key][i]/sum
+      }
+    })
+  }
+  return m;
+}
+
+export function Max(m){
+         
+  if(sum>0){
+    Object.keys(m).map(key=>{
+      for(let i=0;i<m[key].length;i++){
+        m[key][i] = m[key][i]/sum
+      }
+    })
+  }
+  return m;
 }
