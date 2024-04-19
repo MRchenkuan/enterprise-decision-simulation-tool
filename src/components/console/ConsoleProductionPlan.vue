@@ -11,12 +11,16 @@ import {
   processMatrix,
   processMatrixes,
   softMax,
+  Max,
   sumColumns,
   sumArray,
   sumRows,
   timesArrays,
   sum2DArray,
-  timesMatrix
+  timesMatrix,
+  minusMatrix,
+  minusArrays,
+  produceCostCalc
  } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
 import {
@@ -26,12 +30,13 @@ import {
   TRANSPORTATION_PLAN , 
   TRANSPORTATION_COST_FIXED,
   MY_PRICES,
+  REQUIREMENT_NET,
   totalProfit,
-  PRODUCTION_PLAN, laborCount, machineCount,COST_PRODUCE} from '../../globalState';
+  PRODUCTION_PLAN, laborCount, machineCount,COST_PRODUCE, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
 
-const btnByMaxCount = ref(true)
+const btnByMax = ref(true)
 
 
 // 1. 现根据当前生产计划计算每件生产消耗
@@ -104,7 +109,7 @@ watchEffect(()=>{
 })
 
 
-function isPlanAdequated(plan){
+function isPlanAdequated(plan, resourceLimit = true, overtimeLimit=true){
   plan = processMatrix(plan,(it)=>Math.floor(it));// 向下取整，避免每一步计算误差过大
   // 1. 不能超过最大用工
   const resources_labor = {};
@@ -122,19 +127,32 @@ function isPlanAdequated(plan){
   
     // 2. 加班不能超过正班
   const isOverworkOk =
-  _laborSum[1] <= (_laborSum[0] +1)
-  && _laborSum[3]<=(_laborSum[2] +1)
+  _laborSum[1] <= (_laborSum[0])
+  && _laborSum[3]<=(_laborSum[2])
   // && _mechineSum[1]<=_mechineSum[0]
   // && _mechineSum[3]<=_mechineSum[2]
 // debugger
-  return isOverworkOk && isResouceOk;
 
+  // 3. 没有正班不能加班
+  const isWorkError = Object.values(plan).some(row=>{
+    return row[1]>row[0] || row[3]>row[2]
+  })
+
+
+  if(!resourceLimit){
+    return isOverworkOk && isWorkError
+  }
+  
+  if(overtimeLimit){
+    return isResouceOk && isWorkError
+  }
+
+  return isOverworkOk && isResouceOk && isWorkError;
 }
 
 
 function calcProfit(plan, withManageCost = true){
   const config = {A,B,C,D}
-  const tplan = TRANSPORTATION_PLAN.value;
   // 总投入 = 生产成本+生产管理费+物流成本
   // 生产成本
   const productInvest = sum2DArray(Object.values(timesMatrix(plan, COST_PRODUCE.value)));
@@ -159,47 +177,72 @@ function calcProfit(plan, withManageCost = true){
   
   // 物流成本
   let transInvest = 0
-  Object.keys(tplan).map(key=>{
-    const line = TRANSPORTATION_COST_FIXED.value[key]
-    tplan[key].map((it,id)=>{
-      if(it>0){
-        transInvest += ~~line[id];
-      }   
-    })
-  })
+
   const totalInvest = productInvest+manageInvest+transInvest;
   const avgPrices = sumRows(Object.values(MY_PRICES.value)).map(it=>it/4)
   const production = sumRows(Object.values(plan));
   const totalIncome = sumArray(timesArrays(avgPrices, production))
   return totalIncome-totalInvest
+}
 
+
+function calcProduceCost(plan){
+  return {
+    A: produceCostCalc(A.value, plan.A),
+    B: produceCostCalc(B.value, plan.B),
+    C: produceCostCalc(C.value, plan.C),
+    D: produceCostCalc(D.value, plan.D),
+  }
+}
+
+function calcProfitByUnit(plan, key ,i, dx){
+  const LINE = {
+    A,B,C,D
+  }
+  // 售价 - 物流成本
+  const _avgProfit = sumRows(Object.values(minusMatrix(MY_PRICES.value, TRANSPORTATION_COST_DYNAMIC.value))).map(it=>it/4);
+  const avgProfit = {
+    A: _avgProfit[0],
+    B: _avgProfit[1],
+    C: _avgProfit[2],
+    D: _avgProfit[3],
+  };
+  // 生产成本
+  const costProduce = calcProduceCost(plan);
+  // 单个车间生产一个商品的净利润
+  const singleProfitNet = avgProfit[key] - costProduce[key][i]
+
+  // 每个工时和机时的消耗
+  const {laborCost, machineCost} = LINE[key].value
+  return {
+    laborAmount: dx * singleProfitNet/laborCost,
+    machineAmount: dx * singleProfitNet/machineCost,
+  }
+}
+
+function resourceLeft(){
+  return {
+    lLeft: laborCount.value - laborRequire.value,
+    mLeft: machineCount.value - mechineRequire.value,
+  }
 }
 
 /**
  * 直接根据需求等比缩放设置产量，确保成本最低
- * 1. 不超过总需求（约束）
- * 2. 成本作为梯度
  */
 function byRequire(){
-  calcProfit(dPlan)
-}
+  let requirement = sumRows(Object.values(REQUIREMENT_NET.value))
+  const expansion = 1.2;
+  requirement = requirement.map(it=>it*expansion);
+  requirement = {
+    A:requirement[0],
+    B:requirement[1],
+    C:requirement[2],
+    D:requirement[3],
+  }
 
-/**
- * 寻找最大利润
- * 通过单位工时与单位机时的最大利用率梯度下降
- * 1. 把单位工时+机时的成本作为梯度
- * 2. 反向更新
- */
-function byMaxProfit(){
 
-}
-
-/**
- * 在确保利润的前提下
- * 通过利润梯度下降寻找最大产量
- */
-function byMaxCount(){
-  btnByMaxCount.value = false;
+  btnByMax.value = false;
   let targetPlan = {
     A:[0,0,0,0],
       B:[0,0,0,0],
@@ -210,10 +253,66 @@ function byMaxCount(){
 
   // 梯度下降法求解
   const timer = setInterval(()=>{
-    const prevProfit = calcProfit(targetPlan);
-    const dx = 7;
-    const learningRate = 7;
-    const increaseProfitMatrix = {
+    const dx = 4;
+    const PMatrix = {
+      A:[0,0,0,0],
+      B:[0,0,0,0],
+      C:[0,0,0,0],
+      D:[0,0,0,0]
+    }
+    let oneAvalid = false
+    Object.keys(targetPlan).forEach(key=>{
+      // 排除掉未选的key
+      if(!productChoice.value.includes(key)) return;
+      //迭代
+      targetPlan[key].forEach((it, i)=>{
+        const dPlan = cloneDeep(targetPlan);
+        // 单独控制一个维度的变量
+        dPlan[key][i] = targetPlan[key][i] + dx;
+        // 检查增量之后是否符合生产要求
+        if(isPlanAdequated(dPlan,true,true) && sumArray(dPlan[key])<=requirement[key]){
+          oneAvalid = true;
+          // 符合则计算盈利矩阵
+          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
+        } else {
+          // 不符合则直接设置盈利矩阵设置为0
+          PMatrix[key][i] = 0;
+        }
+      })
+    })
+    if(!oneAvalid){
+      btnByMax.value = true
+      clearInterval(timer);
+      // PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
+    } else {
+      // 归一化梯度
+      // const p = softMax(PMatrix);
+      const p = Max(PMatrix);
+      // 根据利润反向传播修改利润
+      const d = processMatrix(p,(it)=>it*dx);
+      targetPlan = plusMatrix(d, targetPlan);
+      PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
+    }
+  },30)
+}
+
+/**
+ * 寻找最大利润
+ */
+function byMaxProfit(){
+  btnByMax.value = false;
+  let targetPlan = {
+    A:[0,0,0,0],
+      B:[0,0,0,0],
+      C:[0,0,0,0],
+      D:[0,0,0,0]
+  }
+  if(!isPlanAdequated(targetPlan)) return;
+
+  // 梯度下降法求解
+  const timer = setInterval(()=>{
+    const dx = 4;
+    const PMatrix = {
       A:[0,0,0,0],
       B:[0,0,0,0],
       C:[0,0,0,0],
@@ -232,28 +331,89 @@ function byMaxCount(){
         if(isPlanAdequated(dPlan)){
           oneAvalid = true;
           // 符合则计算盈利矩阵
-          increaseProfitMatrix[key][i] = calcProfit(dPlan, false) - prevProfit; // 比较盈利或者比较其他的作为梯度
+          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
         } else {
           // 不符合则直接设置盈利矩阵设置为0
-          increaseProfitMatrix[key][i] = 0;
+          PMatrix[key][i] = 0;
         }
       })
     })
     if(!oneAvalid){
-      window.test = ()=>{
-        isPlanAdequated(targetPlan)
-      }
-      btnByMaxCount.value = true
+      btnByMax.value = true
       clearInterval(timer);
+      // PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
     } else {
+      // 归一化梯度
+      // const p = softMax(PMatrix);
+      const p = Max(PMatrix);
       // 根据利润反向传播修改利润
-      const p = softMax(increaseProfitMatrix);
-      const d = processMatrix(p,(it)=>it*learningRate);
+      const d = processMatrix(p,(it)=>it*dx);
       targetPlan = plusMatrix(d, targetPlan);
       PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
     }
   },30)
 }
+
+/**
+ * 在确保利润的前提下
+ * 通过利润梯度下降寻找最大产量
+ */
+async function byMaxCount(){
+  btnByMax.value = false;
+  let targetPlan = {
+    A:[0,0,0,0],
+      B:[0,0,0,0],
+      C:[0,0,0,0],
+      D:[0,0,0,0]
+  }
+  if(!isPlanAdequated(targetPlan)) return;
+
+  // 梯度下降法求解
+  const timer = setInterval(()=>{
+    const dx = 4;
+    const PMatrix = {
+      A:[0,0,0,0],
+      B:[0,0,0,0],
+      C:[0,0,0,0],
+      D:[0,0,0,0]
+    }
+    let oneAvalid = false
+    Object.keys(targetPlan).forEach(key=>{
+      // 排除掉未选的key
+      if(!productChoice.value.includes(key)) return;
+      //迭代
+      targetPlan[key].forEach((it, i)=>{
+        const dPlan = cloneDeep(targetPlan);
+        // 单独控制一个维度的变量
+        dPlan[key][i] = targetPlan[key][i] + dx;
+        // 检查增量之后是否符合生产要求
+        if(isPlanAdequated(dPlan)){
+          oneAvalid = true;
+          // 符合则计算盈利矩阵
+          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
+        } else {
+          // 不符合则直接设置盈利矩阵设置为0
+          PMatrix[key][i] = 0;
+        }
+      })
+    })
+    if(!oneAvalid){
+      btnByMax.value = true
+      clearInterval(timer);
+      // PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
+    } else {
+      // 归一化梯度
+      // const p = softMax(PMatrix);
+      const p = softMax(PMatrix);
+      // 根据利润反向传播修改利润
+      const d = processMatrix(p,(it)=>it*dx);
+      targetPlan = plusMatrix(d, targetPlan);
+      PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
+    }
+  },30)
+}
+
+
 
 </script>
 
@@ -268,9 +428,9 @@ function byMaxCount(){
     </div>
     
     <div class="options">
-      <el-button type="primary" size="small" disabled @click="byRequire">按需求</el-button>
-      <el-button type="primary" size="small" disabled @click="byMaxProfit">按最大利润</el-button>
-      <el-button type="primary" :disabled="!btnByMaxCount" size="small" @click="byMaxCount">按最大产量</el-button>
+      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求</el-button>
+      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byMaxProfit">按最大利润</el-button>
+      <el-button type="primary" :disabled="!btnByMax" size="small" @click="byMaxCount">均衡投入</el-button>
     </div>
     <div class="options">
       <el-checkbox-group v-model="productChoice" size="small">

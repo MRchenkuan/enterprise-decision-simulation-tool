@@ -120,11 +120,16 @@ export function plusMatrix(m1, m2) {
 }
 
 export function plusArrays(m1,m2){
-  let result = [];
-  for (let i = 0; i < m1.length; i++) {
-    result.push(parseFloat(m1[i]) + parseFloat(m2[i]));
+  try{
+    let result = [];
+    for (let i = 0; i < m1.length; i++) {
+      result.push(parseFloat(m1[i]) + parseFloat(m2[i]));
+    }
+    return result;
+  } catch{
+    debugger
   }
-  return result;
+  
 } 
 
 export function minusMatrix(m1, m2) {
@@ -491,13 +496,37 @@ export function softMax(m){
 }
 
 export function Max(m){
-         
-  if(sum>0){
-    Object.keys(m).map(key=>{
-      for(let i=0;i<m[key].length;i++){
-        m[key][i] = m[key][i]/sum
-      }
-    })
-  }
-  return m;
+  const matrix = Object.values(m);
+    // 找到二维数组中的最大值
+    let max = -Infinity;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            if (matrix[i][j] > max) {
+                max = matrix[i][j];
+            }
+        }
+    }
+
+    // 如果最大值为0，则返回原数组
+    if (max === 0) {
+        return {
+          A:[0,0,0,0],
+          B:[0,0,0,0],
+          C:[0,0,0,0],
+          D:[0,0,0,0],
+        };
+    }
+
+    // 将最大值设为1，其余设为0
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            matrix[i][j] = (matrix[i][j] === max) ? 1 : 0;
+        }
+    }
+    return {
+      A:matrix[0],
+      B:matrix[1],
+      C:matrix[2],
+      D:matrix[3],
+    }
 }
