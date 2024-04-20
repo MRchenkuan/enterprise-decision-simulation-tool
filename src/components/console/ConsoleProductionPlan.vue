@@ -140,14 +140,14 @@ function isPlanAdequated(plan, resourceLimit = true, overtimeLimit=true){
 
 
   if(!resourceLimit){
-    return isOverworkOk && isWorkError
+    return isOverworkOk && !isWorkError
   }
   
   if(overtimeLimit){
-    return isResouceOk && isWorkError
+    return isResouceOk && !isWorkError
   }
 
-  return isOverworkOk && isResouceOk && isWorkError;
+  return isOverworkOk && isResouceOk && !isWorkError;
 }
 
 
