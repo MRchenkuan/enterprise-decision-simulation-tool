@@ -279,11 +279,11 @@ watchEffect(()=>{
   // 根据价格 - 平均成本算毛利润
   PROFIT_GROSS.value=minusMatrixArray(MY_PRICES.value, COST_PRODUCE_DYNAMIC.value, true)
   // 毛利率
-  PROFIT_GROSS_RATE.value = divideMatrix(PROFIT_GROSS.value, MY_PRICES.value)
+  PROFIT_GROSS_RATE.value = divideMatrix(PROFIT_GROSS.value, COST_PRODUCE.value)
   // 净利润
   PROFIT_NET.value = minusMatrix(PROFIT_GROSS.value, TRANSPORTATION_COST_DYNAMIC.value)
   // 净利率
-  PROFIT_NET_RATE.value = divideMatrix(PROFIT_NET.value, MY_PRICES.value)
+  PROFIT_NET_RATE.value = divideMatrix(PROFIT_NET.value, COST_PRODUCE.value)
 })
 
 watchEffect(()=>{

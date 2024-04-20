@@ -133,21 +133,15 @@ function isPlanAdequated(plan, resourceLimit = true, overtimeLimit=true){
   // && _mechineSum[3]<=_mechineSum[2]
 // debugger
 
-  // 3. 没有正班不能加班
-  const isWorkError = Object.values(plan).some(row=>{
-    return row[1]>row[0] || row[3]>row[2]
-  })
-
-
   if(!resourceLimit){
-    return isOverworkOk && !isWorkError
+    return isOverworkOk
   }
   
   if(overtimeLimit){
-    return isResouceOk && !isWorkError
+    return isResouceOk
   }
 
-  return isOverworkOk && isResouceOk && !isWorkError;
+  return isOverworkOk && isResouceOk;
 }
 
 
@@ -182,7 +176,8 @@ function calcProfit(plan, withManageCost = true){
   const avgPrices = sumRows(Object.values(MY_PRICES.value)).map(it=>it/4)
   const production = sumRows(Object.values(plan));
   const totalIncome = sumArray(timesArrays(avgPrices, production))
-  return totalIncome-totalInvest
+  const totalProfit = totalIncome-totalInvest
+  return totalProfit
 }
 
 
@@ -222,17 +217,39 @@ function calcProfitByUnit(plan, key ,i, dx){
 
 function resourceLeft(){
   return {
+    lLeft: laborCount.value,
+    mLeft: machineCount.value,
+  }
+  return {
     lLeft: laborCount.value - laborRequire.value,
     mLeft: machineCount.value - mechineRequire.value,
   }
 }
 
 /**
+ * 单位人机成本
+ */
+function ResProducePower(p, shifts){
+  const {machineCost,laborCost} = p;
+  const hourRemain = p.hourRemain[shifts];
+  const {lLeft, mLeft} = resourceLeft();
+  // 单独生产单个能生产多少个
+  return Math.min(lLeft*hourRemain/laborCost,mLeft*hourRemain/machineCost)
+  // return machineCost+laborCost
+}
+
+/**
  * 直接根据需求等比缩放设置产量，确保成本最低
  */
 function byRequire(){
+  PRODUCTION_PLAN.value={
+    A:[0,0,0,0],
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0]
+  }
   let requirement = sumRows(Object.values(REQUIREMENT_NET.value))
-  const expansion = 1.2;
+  const expansion = 1.1;
   requirement = requirement.map(it=>it*expansion);
   requirement = {
     A:requirement[0],
@@ -260,6 +277,12 @@ function byRequire(){
       C:[0,0,0,0],
       D:[0,0,0,0]
     }
+    const Matrix = {
+      A:[0,0,0,0],
+      B:[0,0,0,0],
+      C:[0,0,0,0],
+      D:[0,0,0,0]
+    }
     let oneAvalid = false
     Object.keys(targetPlan).forEach(key=>{
       // 排除掉未选的key
@@ -271,9 +294,9 @@ function byRequire(){
         dPlan[key][i] = targetPlan[key][i] + dx;
         // 检查增量之后是否符合生产要求
         if(isPlanAdequated(dPlan,true,true) && sumArray(dPlan[key])<=requirement[key]){
-          oneAvalid = true;
           // 符合则计算盈利矩阵
-          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
+          PMatrix[key][i] =  (calcProfit(dPlan, false) - calcProfit(targetPlan, false))*ResProducePower(pConfig[key].value,i); // 比较盈利或者比较其他的作为梯度
+          oneAvalid = PMatrix[key][i]>0;
         } else {
           // 不符合则直接设置盈利矩阵设置为0
           PMatrix[key][i] = 0;
@@ -300,6 +323,12 @@ function byRequire(){
  * 寻找最大利润
  */
 function byMaxProfit(){
+  PRODUCTION_PLAN.value={
+    A:[0,0,0,0],
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0]
+  }
   btnByMax.value = false;
   let targetPlan = {
     A:[0,0,0,0],
@@ -329,9 +358,11 @@ function byMaxProfit(){
         dPlan[key][i] = targetPlan[key][i] + dx;
         // 检查增量之后是否符合生产要求
         if(isPlanAdequated(dPlan)){
-          oneAvalid = true;
+          console.log((calcProfit(dPlan, false) - calcProfit(targetPlan, false)),ResProducePower(pConfig[key].value,i))
           // 符合则计算盈利矩阵
-          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
+          PMatrix[key][i] =  (calcProfit(dPlan, false) - calcProfit(targetPlan, false))*ResProducePower(pConfig[key].value,i); // 比较盈利或者比较其他的作为梯度
+          oneAvalid = PMatrix[key][i]>0;
+
         } else {
           // 不符合则直接设置盈利矩阵设置为0
           PMatrix[key][i] = 0;
@@ -359,12 +390,18 @@ function byMaxProfit(){
  * 通过利润梯度下降寻找最大产量
  */
 async function byMaxCount(){
+  PRODUCTION_PLAN.value={
+    A:[0,0,0,0],
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0]
+  }
   btnByMax.value = false;
   let targetPlan = {
     A:[0,0,0,0],
-      B:[0,0,0,0],
-      C:[0,0,0,0],
-      D:[0,0,0,0]
+    B:[0,0,0,0],
+    C:[0,0,0,0],
+    D:[0,0,0,0]
   }
   if(!isPlanAdequated(targetPlan)) return;
 
@@ -388,9 +425,9 @@ async function byMaxCount(){
         dPlan[key][i] = targetPlan[key][i] + dx;
         // 检查增量之后是否符合生产要求
         if(isPlanAdequated(dPlan)){
-          oneAvalid = true;
           // 符合则计算盈利矩阵
-          PMatrix[key][i] =  calcProfit(dPlan, false) - calcProfit(targetPlan, false) // 比较盈利或者比较其他的作为梯度
+          PMatrix[key][i] =  (calcProfit(dPlan, false) - calcProfit(targetPlan, false))*ResProducePower(pConfig[key].value,i); // 比较盈利或者比较其他的作为梯度
+          oneAvalid = PMatrix[key][i]>0;
         } else {
           // 不符合则直接设置盈利矩阵设置为0
           PMatrix[key][i] = 0;
