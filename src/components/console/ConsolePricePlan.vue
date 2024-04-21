@@ -55,24 +55,24 @@ const marks = reactive({
   0.2: {
     style: {
       color: '#F56C6C',
-      top: "-40px",
-      fontSize:"12px"
+      top: "-30px",
+      fontSize:"6px"
     },
     label: '20%',
   },
   0.4: {
     style: {
-      fontSize:"12px",
+      fontSize:"6px",
       color: '#67C23A',
-      top: "-40px"
+      top: "-30px"
     },
     label: '40%',
   },
   0.6: {
     style: {
-      fontSize:"12px",
+      fontSize:"6px",
       color: '#F56C6C',
-      top: "-40px"
+      top: "-30px"
     },
     label: '60%',
   },

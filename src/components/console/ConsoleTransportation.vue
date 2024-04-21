@@ -67,15 +67,16 @@ const marks = reactive({
   0.08: {
     style: {
       color: '#67C23A',
-      top: "-40px",
-      fontSize:"12px"
+      top: "-30px",
+      fontSize:"9px"
     },
     label: '8%',
   },
   0.15: {
     style: {
+      fontSize:"9px",
       color: '#F56C6C',
-      top: "-40px"
+      top: "-30px"
     },
     label: '15%',
   },

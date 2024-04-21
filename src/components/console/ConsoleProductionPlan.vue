@@ -71,6 +71,9 @@ const laborRequire = ref(0)
 // 机器需求
 const mechineRequire = ref(0)
 
+// 需求膨胀系数
+const expansion = ref(1.1)
+
 function calcLabor(p, plan_arr){
   return plan_arr.map((count, id)=>{
     return count*p.laborCost/p.hourRemain[id]
@@ -238,8 +241,35 @@ function ResProducePower(p, shifts){
   // return machineCost+laborCost
 }
 
+const marks = reactive({
+  1: {
+    style: {
+      color: '#67C23A',
+      top: "-30px",
+      fontSize:"9px"
+    },
+    label: '1',
+  },
+  1.2: {
+    style: {
+      color: '#67C23A',
+      top: "-30px",
+      fontSize:"9px"
+    },
+    label: '1.2',
+  },
+  1.5: {
+    style: {
+      color: '#F56C6C',
+      top: "-30px",
+      fontSize:"9px"
+    },
+    label: '1.5',
+  },
+})
+
 /**
- * 直接根据需求等比缩放设置产量，确保成本最低
+ * 按需求生产，如果都满足需求则生产利润最大的
  */
 function byRequire(){
   PRODUCTION_PLAN.value={
@@ -249,8 +279,7 @@ function byRequire(){
     D:[0,0,0,0]
   }
   let requirement = sumRows(Object.values(REQUIREMENT_NET.value))
-  const expansion = 1.1;
-  requirement = requirement.map(it=>it*expansion);
+  requirement = requirement.map(it=>it*expansion.value);
   requirement = {
     A:requirement[0],
     B:requirement[1],
@@ -458,14 +487,16 @@ async function byMaxCount(){
   <div class="panel-header">
     <div class="lmconfig">
       <el-text class="lmconfigtitle" size="small">机器数</el-text>
-        <el-input v-model="machineCount" size="small" style="width: 60px;" />
-
-        <el-text class="lmconfigtitle" size="small">人力数</el-text>
-        <el-input v-model="laborCount" size="small" style="width: 60px;" />
+      <el-input v-model="machineCount" size="small" style="width: 60px;" />
+      <el-text class="lmconfigtitle" size="small">人力数</el-text>
+      <el-input v-model="laborCount" size="small" style="width: 60px;" />
     </div>
     
+    
+
     <div class="options">
-      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求</el-button>
+      <el-slider style="width:30%;margin-right: 5px;" :disabled="!btnByMax" v-model="expansion" size="small" :min="0.2" :max="2" :step="0.1" :marks="marks" />
+      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求({{ expansion }}倍)</el-button>
       <el-button type="primary" size="small" :disabled="!btnByMax" @click="byMaxProfit">按最大利润</el-button>
       <el-button type="primary" :disabled="!btnByMax" size="small" @click="byMaxCount">均衡投入</el-button>
     </div>
