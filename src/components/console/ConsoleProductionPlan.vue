@@ -31,6 +31,7 @@ import {
   TRANSPORTATION_COST_FIXED,
   MY_PRICES,
   REQUIREMENT_NET,
+  MARKET_REQUIREMENT,
   totalProfit,
   PRODUCTION_PLAN, laborCount, machineCount,COST_PRODUCE, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
@@ -271,14 +272,16 @@ const marks = reactive({
 /**
  * 按需求生产，如果都满足需求则生产利润最大的
  */
-function byRequire(){
+function _byRequire(net=false){
   PRODUCTION_PLAN.value={
     A:[0,0,0,0],
     B:[0,0,0,0],
     C:[0,0,0,0],
     D:[0,0,0,0]
   }
-  let requirement = sumRows(Object.values(REQUIREMENT_NET.value))
+  // 按需求生产
+  let requirement = net ? sumRows(Object.values(processMatrix(REQUIREMENT_NET.value, it=>it>=0?it:0))) : sumRows(Object.values(MARKET_REQUIREMENT.value))
+
   requirement = requirement.map(it=>it*expansion.value);
   requirement = {
     A:requirement[0],
@@ -414,69 +417,13 @@ function byMaxProfit(){
   },30)
 }
 
-/**
- * 在确保利润的前提下
- * 通过利润梯度下降寻找最大产量
- */
-async function byMaxCount(){
-  PRODUCTION_PLAN.value={
-    A:[0,0,0,0],
-    B:[0,0,0,0],
-    C:[0,0,0,0],
-    D:[0,0,0,0]
-  }
-  btnByMax.value = false;
-  let targetPlan = {
-    A:[0,0,0,0],
-    B:[0,0,0,0],
-    C:[0,0,0,0],
-    D:[0,0,0,0]
-  }
-  if(!isPlanAdequated(targetPlan)) return;
+function byRequire(){
+  _byRequire()
+}
 
-  // 梯度下降法求解
-  const timer = setInterval(()=>{
-    const dx = 4;
-    const PMatrix = {
-      A:[0,0,0,0],
-      B:[0,0,0,0],
-      C:[0,0,0,0],
-      D:[0,0,0,0]
-    }
-    let oneAvalid = false
-    Object.keys(targetPlan).forEach(key=>{
-      // 排除掉未选的key
-      if(!productChoice.value.includes(key)) return;
-      //迭代
-      targetPlan[key].forEach((it, i)=>{
-        const dPlan = cloneDeep(targetPlan);
-        // 单独控制一个维度的变量
-        dPlan[key][i] = targetPlan[key][i] + dx;
-        // 检查增量之后是否符合生产要求
-        if(isPlanAdequated(dPlan)){
-          // 符合则计算盈利矩阵
-          PMatrix[key][i] =  (calcProfit(dPlan, false) - calcProfit(targetPlan, false))*ResProducePower(pConfig[key].value,i); // 比较盈利或者比较其他的作为梯度
-          oneAvalid = PMatrix[key][i]>0;
-        } else {
-          // 不符合则直接设置盈利矩阵设置为0
-          PMatrix[key][i] = 0;
-        }
-      })
-    })
-    if(!oneAvalid){
-      btnByMax.value = true
-      clearInterval(timer);
-      // PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
-    } else {
-      // 归一化梯度
-      // const p = softMax(PMatrix);
-      const p = softMax(PMatrix);
-      // 根据利润反向传播修改利润
-      const d = processMatrix(p,(it)=>it*dx);
-      targetPlan = plusMatrix(d, targetPlan);
-      PRODUCTION_PLAN.value = processMatrix(targetPlan,(it)=>~~it);
-    }
-  },30)
+
+function byRequireNet(){
+  _byRequire(true)
 }
 
 
@@ -497,8 +444,8 @@ async function byMaxCount(){
     <div class="options">
       <el-slider style="width:30%;margin-right: 5px;" :disabled="!btnByMax" v-model="expansion" size="small" :min="0.2" :max="2" :step="0.1" :marks="marks" />
       <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求({{ expansion }}倍)</el-button>
+      <el-button type="primary" :disabled="!btnByMax" size="small" @click="byRequireNet">按净需求({{ expansion }}倍)</el-button>
       <el-button type="primary" size="small" :disabled="!btnByMax" @click="byMaxProfit">按最大利润</el-button>
-      <el-button type="primary" :disabled="!btnByMax" size="small" @click="byMaxCount">均衡投入</el-button>
     </div>
     <div class="options">
       <el-checkbox-group v-model="productChoice" size="small">

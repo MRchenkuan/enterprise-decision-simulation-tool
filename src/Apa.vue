@@ -28,6 +28,7 @@
     PROFIT_GROSS,
     PROFIT_GROSS_RATE,
     REQUIREMENT_NET,
+    MARKET_REQUIREMENT,
     PROFIT_NET,
     PROFIT_NET_RATE,
     MIN_DELIVERY_COUNT,
@@ -82,11 +83,9 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <div class="tabtag">
                 <el-text class="title">当期市场库存</el-text>
-                <el-text class="title" size="small">(嫌麻烦可以不维护)</el-text>
+                <el-text class="title" size="small">(每期关注)</el-text>
               </div>
-
             </template>
-            <el-alert title="市场可能存在上期存货，净需求要扣减掉" type="warning" :closable="false" show-icon />
             <console-daily-data-updata :data="PERIOD_DATA" />
           </el-tab-pane>
         </el-tabs>
@@ -106,7 +105,9 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">上期市场对我需求</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
+            <el-divider content-position="left"><el-text size="small">本期市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
             <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>

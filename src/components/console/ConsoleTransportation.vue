@@ -2,7 +2,7 @@
 import { ref, watch, watchEffect, reactive } from 'vue'
 import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit,roundToDecimal, formatNumberWithCommas,sumArray } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET, TRANSPORTATION_PLAN, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED,PRODUCTION_PLAN, TIME_SEQ_DATA_LIST} from '../../globalState';
+import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET, MARKET_REQUIREMENT, TRANSPORTATION_PLAN, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED,PRODUCTION_PLAN, TIME_SEQ_DATA_LIST} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
 
@@ -31,45 +31,32 @@ watchEffect(()=>{
   // 1. 计算市场需求比例
   const demandRateList = product_count.map((it,id)=>{
     const tags = ['A','B','C','D'];
-    const reqSum = sumArray(REQUIREMENT_NET.value[tags[id]]);
+    const reqSum = sumArray(MARKET_REQUIREMENT.value[tags[id]]);
     return reqSum ? it/reqSum : 0
   })
 
+  let _plan = {
+    A: MARKET_REQUIREMENT.value.A.map(it=>it*demandRateList[0]),
+    B: MARKET_REQUIREMENT.value.B.map(it=>it*demandRateList[1]),
+    C: MARKET_REQUIREMENT.value.C.map(it=>it*demandRateList[2]),
+    D: MARKET_REQUIREMENT.value.D.map(it=>it*demandRateList[3]),
+  }
   if(mincost.value){
     if(marketdemand){
-      plan.value = processMatrixes(REQUIREMENT_NET.value,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
-        return it1<it2?0:it1
-      } )
+      plan.value = MARKET_REQUIREMENT.value
     } else if(maxstock){
-      // 1. 计算市场需求比例
-      // 2. 按比例分配生产数量
-      plan.value = {
-        A: REQUIREMENT_NET.value.A.map(it=>it*demandRateList[0]),
-        B: REQUIREMENT_NET.value.B.map(it=>it*demandRateList[1]),
-        C: REQUIREMENT_NET.value.C.map(it=>it*demandRateList[2]),
-        D: REQUIREMENT_NET.value.D.map(it=>it*demandRateList[3]),
-      }
+      plan.value= _plan
     }
-
+    plan.value = processMatrixes(plan.value, MIN_DELIVERY_COUNT.value,(it1,it2)=>it1<it2?0:it1)
+    
   } else {
     if(marketdemand){
-      plan.value = JSON.parse(JSON.stringify(REQUIREMENT_NET.value))
-    } else if(maxstock){
-      // 1. 计算市场需求比例
-      // 2. 按比例分配生产数量
-      plan.value = {
-        A: REQUIREMENT_NET.value.A.map(it=>it*demandRateList[0]),
-        B: REQUIREMENT_NET.value.B.map(it=>it*demandRateList[1]),
-        C: REQUIREMENT_NET.value.C.map(it=>it*demandRateList[2]),
-        D: REQUIREMENT_NET.value.D.map(it=>it*demandRateList[3]),
-      }
+      plan.value = JSON.parse(JSON.stringify(MARKET_REQUIREMENT.value))
+    }else if(maxstock){
+      plan.value = _plan;
     }
+
   }
-
-  
-
-
-
   plan.value = processMatrix(plan.value, it=>roundToDecimal(it, 0))
 
   toSumArr.value = sumRows(Object.values(plan.value))
@@ -135,7 +122,7 @@ function reset(){
       <el-text class="linetitle" size="small">配送要求</el-text>
       <div class="cell">
         <el-checkbox v-model="mincost" size="small" style="margin-right: 20px;" >
-          限制配送费率
+          限制配送费率({{ (minTransportCostRate*100).toFixed(0) }}%)
         </el-checkbox>
         <el-radio-group v-model="maxdelivery" size="small">
           <el-radio value="marketdemand">按市场需求</el-radio>

@@ -84,6 +84,13 @@ export const TRANSPORTATION_COST_DYNAMIC = PowerRef('TRANSPORTATION_COST_DYNAMIC
   D:[810, 730,1110,1110],
 })
 
+//我的需求
+export const MARKET_REQUIREMENT = PowerRef('MARKET_REQUIREMENT',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 //我的净需求
 export const REQUIREMENT_NET = PowerRef('REQUIREMENT_NET',{
   A:[0,0,0,0],
@@ -264,8 +271,8 @@ watchEffect(()=>{
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
   const reqNet = plusMatrix(myPureOder,myRequirement);
-  // checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet);
-  checkMapStruct(reqNet) && (REQUIREMENT_NET.value = myRequirement);
+  checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet);
+  checkMapStruct(myRequirement) && (MARKET_REQUIREMENT.value = myRequirement);
 
   MARKET_STORE_COUNT.value= copyLastElement(storeCount);
 })
