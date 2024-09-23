@@ -5,15 +5,12 @@ const props = defineProps({
   data: Object,
 })
 const dailyDataPanelActive = PowerRef('dailyDataPanelActive','销量&市场份额');
-import {laborCount,machineCount, PERIOD_DATA_HISTORY_LIST } from '../../globalState.js'
+import {MARKET_STORE_COUNT } from '../../globalState.js'
 import { PowerRef } from '../../enhanceRef';
 import { debounce } from '../../tools';
 import { ElText } from 'element-plus';
 import PowerUploader from '../PowerUploader.vue'
 
-const newPeriodD = debounce(()=>{
-  PERIOD_DATA_HISTORY_LIST.value.push(JSON.parse(JSON.stringify(props.data)))
-},300)
 
 const updateState = PowerRef('updateState',{
   sale:false,
@@ -27,25 +24,11 @@ watchEffect(()=>{
   allUpdated.value = sale&&require
 })
 
-function newPeriod(){
-  newPeriodD()
-  setUpdateState(false, false)
-}
-function clearPeriod(){
-  PERIOD_DATA_HISTORY_LIST.value=[];
-  setUpdateState(false, false)
-}
-
-function setUpdateState(sale, require){
-  updateState.value.sale = sale;
-  updateState.value.require = require;
-}
-
 </script>
 
 <template>
-  <el-divider content-position="left"><el-text size="small">市场上未卖完的存货</el-text></el-divider>
-  <product-market-card :config="data.myMarketKeep"/>
+  <el-divider content-position="left"><el-text size="small">市场上未卖完的库存</el-text></el-divider>
+  <product-market-card :config="MARKET_STORE_COUNT" disabled/>
   <el-divider border-style="dashed" />
 </template>
 

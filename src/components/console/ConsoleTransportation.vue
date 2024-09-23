@@ -1,12 +1,14 @@
 <script setup>
 import { ref, watch, watchEffect, reactive } from 'vue'
-import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit,roundToDecimal, formatNumberWithCommas } from '../../tools';
+import { plusMatrix, formatAsPercentage, parsePercentage, processMatrix,processMatrixes, sumRows, timesMatrix, sum2DArray, autoUnit,roundToDecimal, formatNumberWithCommas,sumArray } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
-import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET,TRANSPORTATION_PLAN, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED} from '../../globalState';
+import { minTransportCostRate,MIN_DELIVERY_COUNT, REQUIREMENT_NET, TRANSPORTATION_PLAN, TRANSPORTATION_COST_DYNAMIC, TRANSPORTATION_COST_FIXED,PRODUCTION_PLAN, TIME_SEQ_DATA_LIST} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
 
 
-const demand = PowerRef('demand',['marketdemand'])
+const mincost = PowerRef('mincost',false);
+const maxdelivery = PowerRef('maxdelivery','maxstock');
+
 const conditions = ref({})
 const dynamicCost = ref(0)
 const fixedCost = ref(0)
@@ -16,30 +18,58 @@ const plan = TRANSPORTATION_PLAN
 
 const TRANSPORTATION_PLAN_CACHED = PowerRef('TRANSPORTATION_PLAN_CACHED',{})
 const toSumArr = ref([])
-const editable = ref(true)
 
 watchEffect(()=>{
-  conditions.value = {
-    mincost:Object.values(demand.value).indexOf('mincost')>=0,
-    marketdemand:Object.values(demand.value).indexOf('marketdemand')>=0,
-  }
+  // 当前仓库的存货
+  const storeHis = TIME_SEQ_DATA_LIST.value.storeCount
+  const currentStore = storeHis[storeHis.length-1];
 
-  const {mincost, marketdemand} = conditions.value;
+  const marketdemand = maxdelivery.value === 'marketdemand';
+  const maxstock = maxdelivery.value === 'maxstock'; 
+  const product_count = sumRows(Object.values(PRODUCTION_PLAN.value));
 
-  if(mincost && marketdemand){
-    plan.value = processMatrixes(REQUIREMENT_NET.value,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
-      return it1<it2?0:it1
-    } )
-    editable.value = false
-  } else if(mincost){
-    plan.value = JSON.parse(JSON.stringify(MIN_DELIVERY_COUNT.value))
-    editable.value = false
-  } else if(marketdemand){
-    plan.value = JSON.parse(JSON.stringify(REQUIREMENT_NET.value))
-    editable.value = false
+  // 1. 计算市场需求比例
+  const demandRateList = product_count.map((it,id)=>{
+    const tags = ['A','B','C','D'];
+    const reqSum = sumArray(REQUIREMENT_NET.value[tags[id]]);
+    return reqSum ? it/reqSum : 0
+  })
+
+  if(mincost.value){
+    if(marketdemand){
+      plan.value = processMatrixes(REQUIREMENT_NET.value,MIN_DELIVERY_COUNT.value,(it1,it2)=>{
+        return it1<it2?0:it1
+      } )
+    } else if(maxstock){
+      // 1. 计算市场需求比例
+      // 2. 按比例分配生产数量
+      plan.value = {
+        A: REQUIREMENT_NET.value.A.map(it=>it*demandRateList[0]),
+        B: REQUIREMENT_NET.value.B.map(it=>it*demandRateList[1]),
+        C: REQUIREMENT_NET.value.C.map(it=>it*demandRateList[2]),
+        D: REQUIREMENT_NET.value.D.map(it=>it*demandRateList[3]),
+      }
+    }
+
   } else {
-    editable.value = true
+    if(marketdemand){
+      plan.value = JSON.parse(JSON.stringify(REQUIREMENT_NET.value))
+    } else if(maxstock){
+      // 1. 计算市场需求比例
+      // 2. 按比例分配生产数量
+      plan.value = {
+        A: REQUIREMENT_NET.value.A.map(it=>it*demandRateList[0]),
+        B: REQUIREMENT_NET.value.B.map(it=>it*demandRateList[1]),
+        C: REQUIREMENT_NET.value.C.map(it=>it*demandRateList[2]),
+        D: REQUIREMENT_NET.value.D.map(it=>it*demandRateList[3]),
+      }
+    }
   }
+
+  
+
+
+
   plan.value = processMatrix(plan.value, it=>roundToDecimal(it, 0))
 
   toSumArr.value = sumRows(Object.values(plan.value))
@@ -87,7 +117,7 @@ function save(){
 }
 
 function reset(){
-  demand.value=[];
+  mincost.value=false;
   plan.value = TRANSPORTATION_PLAN_CACHED.value;
 }
 
@@ -102,24 +132,23 @@ function reset(){
       <el-button class="btn" type="primary" size="small" @click="reset">复原</el-button>
     </div>
     <div class="line">
-      <el-text class="linetitle" size="small">配送费率</el-text>
-      <el-slider :disabled="!conditions.mincost" size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
-    </div>
-    <div class="line">
       <el-text class="linetitle" size="small">配送要求</el-text>
       <div class="cell">
-        <el-checkbox-group v-model="demand" size="small">
-          <el-checkbox value="mincost" name="mincost">
-            不超过配送费
-          </el-checkbox>
-          <el-checkbox value="marketdemand" name="marketdemand">
-            最大市场需求
-          </el-checkbox>
-        </el-checkbox-group>  
+        <el-checkbox v-model="mincost" size="small" style="margin-right: 20px;" >
+          限制配送费率
+        </el-checkbox>
+        <el-radio-group v-model="maxdelivery" size="small">
+          <el-radio value="marketdemand">按市场需求</el-radio>
+          <el-radio value="maxstock">全部送出</el-radio>
+        </el-radio-group>
       </div>
     </div>
+    <div class="line" v-show="mincost">
+      <el-text class="linetitle" size="small">配送费率</el-text>
+      <el-slider size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
+    </div>
   </div>
-  <product-market-card :disabled="conditions.mincost || conditions.marketdemand" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
+  <product-market-card :disabled="conditions.mincost" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
   <div class="footer">
     <el-text class="linetitle cell" size="small">总物流成本:</el-text>
     <el-text class="warn" size="small">{{ dynamicCost }}</el-text>

@@ -81,7 +81,7 @@ import { PowerRef } from './enhanceRef';
           <el-tab-pane name="daily">
             <template #label>
               <div class="tabtag">
-                <el-text class="title">当期市场存货</el-text>
+                <el-text class="title">当期市场库存</el-text>
                 <el-text class="title" size="small">(嫌麻烦可以不维护)</el-text>
               </div>
 
@@ -106,7 +106,7 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉没卖掉的存货）</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
             <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
@@ -147,7 +147,7 @@ import { PowerRef } from './enhanceRef';
           <graph-period-trend :data="TIME_SEQ_DATA_LIST.price"/>
         </div>
         <div class="graph">
-          <el-divider content-position="left"><el-text size="small">库存量</el-text></el-divider>
+          <el-divider content-position="left"><el-text size="small">市场存货</el-text></el-divider>
           <graph-period-trend :data="TIME_SEQ_DATA_LIST.storeCount"/>
         </div>
         <div class="graph">

@@ -224,6 +224,10 @@ export const MARKET_SCALE_HISTORY_LIST= PowerRef('MARKET_SCALE_HISTORY_LIST', []
 export const MARKET_SCALE_MONEY_HISTORY_LIST= PowerRef('MARKET_SCALE_MONEY_HISTORY_LIST', [])
 export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIST', [])
 
+// 从序列数据提取相关
+export const MARKET_STORE_COUNT = PowerRef('MARKET_STORE_COUNT', {})
+
+
 // 文件导入相关
 export const TIME_SEQ_DATA_LIST = PowerRef('TIME_SEQ_DATA_LIST',{})
 TIME_SEQ_DATA_LIST.value.IS_LOAD_WITH_FILE = false;
@@ -231,8 +235,8 @@ TIME_SEQ_DATA_LIST.value.IS_LOAD_WITH_FILE = false;
 
 
 
-const { myOrder, myMarketKeep} = PERIOD_DATA.value;
-const { marketShare, saleCount, requirementCount, orderCount } = TIME_SEQ_DATA_LIST.value; 
+const { marketShare, saleCount, requirementCount, orderCount, storeCount } = TIME_SEQ_DATA_LIST.value; 
+const myMarketKeep = copyLastElement(storeCount);
 
 
 watchEffect(()=>{
@@ -255,12 +259,15 @@ watchEffect(()=>{
 })
 
 watchEffect(()=>{
-  const { marketShare, saleCount, requirementCount, orderCount } = TIME_SEQ_DATA_LIST.value; 
+  const { marketShare, saleCount, requirementCount, orderCount,storeCount } = TIME_SEQ_DATA_LIST.value; 
   const myOrder = copyLastElement(orderCount)
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
   const reqNet = plusMatrix(myPureOder,myRequirement);
-  checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet)
+  // checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet);
+  checkMapStruct(reqNet) && (REQUIREMENT_NET.value = myRequirement);
+
+  MARKET_STORE_COUNT.value= copyLastElement(storeCount);
 })
 
 
