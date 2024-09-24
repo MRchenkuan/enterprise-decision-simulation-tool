@@ -25,8 +25,9 @@ const props = defineProps({
   type:String,
   extra:Array,
   extra2:Array,
-  extraReadonly:Boolean,
-  extraEditable:Boolean,
+  extraReadonly:{
+    default:true
+  },
   places:Number,
   inputType:{
     type:String,
@@ -127,7 +128,7 @@ function colorClass2(v){
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.A[1])">{{ roundPercent(normalConfig.A[1]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.A[2])">{{ roundPercent(normalConfig.A[2]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.A[3])">{{ roundPercent(normalConfig.A[3]) }}</el-text></div>
-      <div v-if="extra&&extraEditable" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra&&!extraReadonly" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-else-if="extra" class="cell4"><el-text size="small" :class="colorClass2(extra[0])">{{ roundPercent(extra[0]) }}</el-text></div>
     </div>
     <div class="line">
@@ -136,7 +137,7 @@ function colorClass2(v){
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.B[1])">{{ roundPercent(normalConfig.B[1]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.B[2])">{{ roundPercent(normalConfig.B[2]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.B[3])">{{ roundPercent(normalConfig.B[3]) }}</el-text></div>
-      <div v-if="extra&&extraEditable" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra&&!extraReadonly" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-else-if="extra" class="cell4"><el-text size="small" :class="colorClass2(extra[1])">{{ roundPercent(extra[1]) }}</el-text></div>
     </div>
     <div class="line">
@@ -145,7 +146,7 @@ function colorClass2(v){
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.C[1])">{{ roundPercent(normalConfig.C[1]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.C[2])">{{ roundPercent(normalConfig.C[2]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.C[3])">{{ roundPercent(normalConfig.C[3]) }}</el-text></div>
-      <div v-if="extra&&extraEditable" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra&&!extraReadonly" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-else-if="extra" class="cell4"><el-text size="small" :class="colorClass2(extra[2])">{{ roundPercent(extra[2]) }}</el-text></div>
     </div>
     <div class="line">
@@ -154,7 +155,7 @@ function colorClass2(v){
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.D[1])">{{ roundPercent(normalConfig.D[1]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.D[2])">{{ roundPercent(normalConfig.D[2]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(normalConfig.D[3])">{{ roundPercent(normalConfig.D[3]) }}</el-text></div>
-      <div v-if="extra&&extraEditable" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra&&!extraReadonly" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-else-if="extra" class="cell4"><el-text size="small" :class="colorClass2(extra[3])">{{ roundPercent(extra[3]) }}</el-text></div>
     </div>
     <div class="line" v-if="extra2">
@@ -163,7 +164,7 @@ function colorClass2(v){
       <div class="cell4"><el-text size="small" :class="colorClass(extra2[1])">{{ roundPercent(extra2[1]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(extra2[2])">{{ roundPercent(extra2[2]) }}</el-text></div>
       <div class="cell4"><el-text size="small" :class="colorClass(extra2[3])">{{ roundPercent(extra2[3]) }}</el-text></div>
-      <div v-if="extra&&extraEditable" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[4]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-if="extra&&!extraReadonly" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[4]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-else-if="extra" class="cell4"><el-text size="small" :class="colorClass2(extra[4])">{{ roundPercent(extra[4]) }}</el-text></div>
     </div>
   </div>
@@ -191,7 +192,7 @@ function colorClass2(v){
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.A[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.A[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra&&extraReadonly" class="cell4"><el-text size="small" :class="colorClass2(extra[0])">{{ roundPercent(extra[0]) }}</el-text></div>
-      <div v-else-if="extra" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-else-if="extra" class="cell4 editable"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品B</el-text>
@@ -200,7 +201,8 @@ function colorClass2(v){
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.B[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.B[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra&&extraReadonly" class="cell4"><el-text size="small" :class="colorClass2(extra[1])">{{ roundPercent(extra[1]) }}</el-text></div>
-      <div v-else-if="extra" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>    </div>
+      <div v-else-if="extra" class="cell4 editable"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[1]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+    </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品C</el-text>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.C[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
@@ -208,7 +210,7 @@ function colorClass2(v){
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.C[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.C[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra&&extraReadonly" class="cell4"><el-text size="small" :class="colorClass2(extra[2])">{{ roundPercent(extra[2]) }}</el-text></div>
-      <div v-else-if="extra" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
+      <div v-else-if="extra" class="cell4 editable"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
     </div>
     <div class="line">
       <el-text class="linetitle" size="small">产品D</el-text>
@@ -217,7 +219,8 @@ function colorClass2(v){
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.D[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="normalConfig.D[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra&&extraReadonly" class="cell4"><el-text size="small" :class="colorClass2(extra[3])">{{ roundPercent(extra[3]) }}</el-text></div>
-      <div v-else-if="extra" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>    </div>
+      <div v-else-if="extra" class="cell4 editable"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>    
+    </div>
     <div class="line" v-if="extra2">
       <el-text class="linetitle" size="small">产品D</el-text>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra2[0]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
@@ -225,7 +228,8 @@ function colorClass2(v){
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra2[2]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra2[3]" :formatter="formater" :parser="parser" size="small" class="input" /></div>
       <div v-if="extra&&extraReadonly" class="cell4"><el-text size="small" :class="colorClass2(extra[4])">{{ roundPercent(extra[4]) }}</el-text></div>
-      <div v-else-if="extra" class="cell4"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[4]" :formatter="formater" :parser="parser" size="small" class="input" /></div>    </div>
+      <div v-else-if="extra" class="cell4 editable"><power-input :disabled="disabled" :places="places" :type="inputType" :controls="controls" controls-position="right" :step="step" v-model="extra[4]" :formatter="formater" :parser="parser" size="small" class="input" /></div>    
+    </div>
   </div>
 </template>
 
@@ -304,4 +308,5 @@ function colorClass2(v){
 .panel{
   background-color: white;
 }
+
 </style>

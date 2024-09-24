@@ -23,6 +23,7 @@ import {
   produceCostCalc
  } from '../../tools';
 import ProductMarketCard from '../ProductMarketCard.vue';
+import PowerInput from '../PowerInput.vue';
 import {
   A,B,C,D, 
   minTransportCostRate,
@@ -72,6 +73,9 @@ const laborRequire = ref(0)
 // 机器需求
 const mechineRequire = ref(0)
 
+// 是否按指定生产
+const produceByMarket = PowerRef('produceByMarket',true);
+
 // 需求膨胀系数
 const expansion = ref(1.1)
 
@@ -91,6 +95,12 @@ const mechineSum = ref([])
 const productChoice = PowerRef('productChoice',['A','B','C','D'])
 const mlrate = ref({})
 const toSumArr = ref([])
+const productCount = ref({
+  A:1,
+  B:1,
+  C:1,
+  D:1
+})
 
 
 watchEffect(()=>{
@@ -251,38 +261,46 @@ const marks = reactive({
     },
     label: '1',
   },
-  1.2: {
+  2: {
     style: {
       color: '#67C23A',
       top: "-30px",
       fontSize:"9px"
     },
-    label: '1.2',
+    label: '2',
   },
-  1.5: {
+  3: {
     style: {
       color: '#F56C6C',
       top: "-30px",
       fontSize:"9px"
     },
-    label: '1.5',
+    label: '3',
   },
 })
 
 /**
  * 按需求生产，如果都满足需求则生产利润最大的
  */
-function _byRequire(net=false){
+function _byRequire(type){
   PRODUCTION_PLAN.value={
     A:[0,0,0,0],
     B:[0,0,0,0],
     C:[0,0,0,0],
     D:[0,0,0,0]
   }
-  // 按需求生产
-  let requirement = net ? sumRows(Object.values(processMatrix(REQUIREMENT_NET.value, it=>it>=0?it:0))) : sumRows(Object.values(MARKET_REQUIREMENT.value))
 
-  requirement = requirement.map(it=>it*expansion.value);
+  let requirement;
+  switch(type){
+    // 按净需求
+    case 1: requirement = sumRows(Object.values(processMatrix(REQUIREMENT_NET.value, it=>it>=0?it:0))).map(it=>it*expansion.value); break;
+    // 按需求
+    case 2: requirement = sumRows(Object.values(MARKET_REQUIREMENT.value)).map(it=>it*expansion.value); break;
+    // 按计划
+    case 3: requirement = Object.values(productCount.value); break;
+    default:requirement = sumRows(Object.values(MARKET_REQUIREMENT.value)).map(it=>it*expansion.value); break;
+  }
+
   requirement = {
     A:requirement[0],
     B:requirement[1],
@@ -418,12 +436,16 @@ function byMaxProfit(){
 }
 
 function byRequire(){
-  _byRequire()
+  _byRequire(2)
 }
 
 
 function byRequireNet(){
-  _byRequire(true)
+  _byRequire(1)
+}
+
+function byRequirePlan(){
+  _byRequire(3)
 }
 
 
@@ -433,30 +455,53 @@ function byRequireNet(){
 <template>
   <div class="panel-header">
     <div class="lmconfig">
+      <el-switch class="planswitch" size="small" v-model="produceByMarket" active-text="按需求生产"/>
       <el-text class="lmconfigtitle" size="small">机器数</el-text>
       <el-input v-model="machineCount" size="small" style="width: 60px;" />
       <el-text class="lmconfigtitle" size="small">人力数</el-text>
       <el-input v-model="laborCount" size="small" style="width: 60px;" />
     </div>
-    
-    
+    <template v-if="produceByMarket">
+      <div class="options">
+        <el-slider style="width:30%;margin-right: 5px;" :disabled="!btnByMax" v-model="expansion" size="small" :min="0.2" :max="4" :step="0.1" :marks="marks" />
+        <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求({{ expansion }}倍)</el-button>
+        <el-button type="primary" :disabled="!btnByMax" size="small" @click="byRequireNet">按净需求({{ expansion }}倍)</el-button>
+        <el-button type="primary" size="small" :disabled="!btnByMax" @click="byMaxProfit">按最大利润</el-button>
+      </div>
+      <div class="options">
+        <el-checkbox-group v-model="productChoice" size="small">
+          <el-checkbox value="A" name="A">产品A</el-checkbox>
+          <el-checkbox value="B" name="B">产品B</el-checkbox>
+          <el-checkbox value="C" name="C">产品C</el-checkbox>
+          <el-checkbox value="D" name="D">产品D</el-checkbox>
+        </el-checkbox-group>    
+      </div>
+    </template>
+    <template v-else>
+      <div class="producebyplan">
+        <div class="count">
+          <el-text size="small">产品A</el-text>
+          <power-input type="number" controls controls-position="right" :step=100 v-model="productCount.A" size="small" class="input" />
+        </div>
+        <div class="count">
+          <el-text size="small">产品B</el-text>
+          <power-input type="number" controls controls-position="right" :step=100 v-model="productCount.B" size="small" class="input" />
+        </div>
+        <div class="count">
+          <el-text size="small">产品C</el-text>
+          <power-input type="number" controls controls-position="right" :step=100 v-model="productCount.C" size="small" class="input" />
+        </div>
+        <div class="count">
+          <el-text size="small">产品D</el-text>
+          <power-input type="number" controls controls-position="right" :step=100 v-model="productCount.D" size="small" class="input" />
+        </div>
+        <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequirePlan">开始排班</el-button>
+      </div>
 
-    <div class="options">
-      <el-slider style="width:30%;margin-right: 5px;" :disabled="!btnByMax" v-model="expansion" size="small" :min="0.2" :max="2" :step="0.1" :marks="marks" />
-      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequire">按需求({{ expansion }}倍)</el-button>
-      <el-button type="primary" :disabled="!btnByMax" size="small" @click="byRequireNet">按净需求({{ expansion }}倍)</el-button>
-      <el-button type="primary" size="small" :disabled="!btnByMax" @click="byMaxProfit">按最大利润</el-button>
-    </div>
-    <div class="options">
-      <el-checkbox-group v-model="productChoice" size="small">
-        <el-checkbox value="A" name="A">产品A</el-checkbox>
-        <el-checkbox value="B" name="B">产品B</el-checkbox>
-        <el-checkbox value="C" name="C">产品C</el-checkbox>
-        <el-checkbox value="D" name="D">产品D</el-checkbox>
-      </el-checkbox-group>    
-    </div>
+    </template>
+
   </div>
-  <product-market-card :places="0" :step="10" controls type="produce" :config="PRODUCTION_PLAN" extra-readonly colored2="info" :extra="toSumArr"/>
+  <product-market-card :places="0" :step="10" controls type="produce" :config="PRODUCTION_PLAN" colored2="info" :extra="toSumArr"/>
   <div class="footer">
     <div class="line">
       <el-text class="linetitle cell" size="small">机器数:</el-text>
@@ -470,11 +515,29 @@ function byRequireNet(){
 </template>
 
 <style scoped>
+.producebyplan{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.producebyplan .count{
+  display: flex;
+  flex-direction: column;
+  width: 15%;
+  margin: 0 5px 0 0;
+}
 .lmconfig{
+  position:relative;
   line-height: 1;
   margin: 0 0 5px;
   display: flex;
   justify-content: flex-end;
+}
+.planswitch{
+  position: absolute;
+  left: 0;
 }
 .lmconfigtitle{
   margin:0 5px

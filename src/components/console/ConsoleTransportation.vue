@@ -48,7 +48,7 @@ watchEffect(()=>{
       plan.value= _plan
     }
     plan.value = processMatrixes(plan.value, MIN_DELIVERY_COUNT.value,(it1,it2)=>it1<it2?0:it1)
-    
+
   } else {
     if(marketdemand){
       plan.value = JSON.parse(JSON.stringify(MARKET_REQUIREMENT.value))
@@ -135,7 +135,7 @@ function reset(){
       <el-slider size="small" :min="0.01" :max="0.5" :step="0.01" v-model="minTransportCostRate" :format-tooltip="formattooltip" :marks="marks" />
     </div>
   </div>
-  <product-market-card :disabled="conditions.mincost" :step="10" controls :places="0" :config="plan" colored2="info" extra-readonly :extra="toSumArr"/>
+  <product-market-card :disabled="conditions.mincost" :step="10" controls :places="0" :config="plan" colored2="info" :extra="toSumArr"/>
   <div class="footer">
     <el-text class="linetitle cell" size="small">总物流成本:</el-text>
     <el-text class="warn" size="small">{{ dynamicCost }}</el-text>

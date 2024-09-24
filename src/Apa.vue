@@ -37,7 +37,8 @@
     MACHINE_PROFIT_PER_HOUR,
     totalIncome,
     totalProfit,
-    totalInvest
+    totalInvest,
+    MARKET_STORE_COUNT
   } from './globalState';
 import { plusMatrix, sumRows,formatNumberWithCommas, divideSequence } from './tools';
 import { PowerRef } from './enhanceRef';
@@ -58,7 +59,7 @@ import { PowerRef } from './enhanceRef';
           <el-tab-pane name="global">
             <template #label>
               <div class="tabtag">
-                <el-text type="success"><el-icon><StarFilled /></el-icon> 全局配置</el-text>
+                <el-text><el-icon><StarFilled/></el-icon> 全局配置</el-text>
                 <el-text type="success" size="small">(首次开始时配置一次)</el-text>
               </div>
             </template>
@@ -78,15 +79,16 @@ import { PowerRef } from './enhanceRef';
             <el-divider content-position="left"><el-text size="small">物流单件配送费 </el-text></el-divider>
             <product-market-card :config="TRANSPORTATION_COST_DYNAMIC"/>
           </el-tab-pane>
-          
-          <el-tab-pane name="daily">
+          <el-tab-pane name="market">
             <template #label>
-              <div class="tabtag">
-                <el-text class="title">当期市场库存</el-text>
-                <el-text class="title" size="small">(每期关注)</el-text>
-              </div>
+              <el-text class="title" type="success"><el-icon><List /></el-icon> 当期销售情况</el-text>
             </template>
-            <console-daily-data-updata :data="PERIOD_DATA" />
+            <el-divider content-position="left"><el-text size="small">我在市场上的库存</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_STORE_COUNT" colored="bad" colored2="info" :extra="sumRows(Object.values(MARKET_STORE_COUNT))"/>
+            <el-divider content-position="left"><el-text size="small">上期市场对我需求</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
+            <el-divider content-position="left"><el-text size="small">本期市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -103,12 +105,8 @@ import { PowerRef } from './enhanceRef';
           </el-tab-pane>
           <el-tab-pane name="profit">
             <template #label>
-              <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 收入相关</el-text>
+              <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 利润相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">上期市场对我需求</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
-            <el-divider content-position="left"><el-text size="small">本期市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
             <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>
             <el-divider content-position="left"><el-text size="small">终端利率（算上物流费用） </el-text></el-divider>
