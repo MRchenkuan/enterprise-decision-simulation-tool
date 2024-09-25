@@ -91,6 +91,29 @@ export const MARKET_REQUIREMENT = PowerRef('MARKET_REQUIREMENT',{
   C:[0,0,0,0],
   D:[0,0,0,0],
 })
+
+//我的销量
+export const MARKET_SALE = PowerRef('MARKET_SALE',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+//我的价格
+export const MARKET_PRICE_MY = PowerRef('MARKET_PRICE_MY',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+
+//市场总销量
+export const MARKET_SALE_GLOBAL = PowerRef('MARKET_SALE_GLOBAL',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 //我的净需求
 export const REQUIREMENT_NET = PowerRef('REQUIREMENT_NET',{
   A:[0,0,0,0],
@@ -139,6 +162,13 @@ export const MARKET_SCALE = ref({
   D:[0,0,0,0],
 }) //价格
 export const MARKET_SHARE_MY = ref({
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+
+export const MARKET_POWER_MY = ref({
   A:[0,0,0,0],
   B:[0,0,0,0],
   C:[0,0,0,0],
@@ -233,6 +263,7 @@ export const MY_MARKET_SHARE_HISTORY_LIST= PowerRef('MY_MARKET_SHARE_HISTORY_LIS
 
 // 从序列数据提取相关
 export const MARKET_STORE_COUNT = PowerRef('MARKET_STORE_COUNT', {})
+export const MARKET_ORDER = PowerRef('MARKET_ORDER', {})
 
 
 // 文件导入相关
@@ -254,7 +285,7 @@ watchEffect(()=>{
 
     MARKET_CAPACITY.value = divideMatrix(_saleCount, _marketShare);
     MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
-    checkMapStruct(marketShare) && (MARKET_SHARE_MY.value = copyLastElement(marketShare));
+    MARKET_SHARE_MY.value = _marketShare;
   }catch(e){
     debugger
   }
@@ -266,7 +297,7 @@ watchEffect(()=>{
 })
 
 watchEffect(()=>{
-  const { marketShare, saleCount, requirementCount, orderCount,storeCount } = TIME_SEQ_DATA_LIST.value; 
+  const { marketShare, saleCount, requirementCount, orderCount,storeCount,price } = TIME_SEQ_DATA_LIST.value; 
   const myOrder = copyLastElement(orderCount)
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
@@ -275,6 +306,11 @@ watchEffect(()=>{
   checkMapStruct(myRequirement) && (MARKET_REQUIREMENT.value = myRequirement);
 
   MARKET_STORE_COUNT.value= copyLastElement(storeCount);
+  MARKET_ORDER.value= myOrder;
+  MARKET_SALE.value= copyLastElement(saleCount);
+  MARKET_SALE_GLOBAL.value= divideMatrix(MARKET_SALE.value, copyLastElement(marketShare));
+  MARKET_POWER_MY.value= divideMatrix(myRequirement, MARKET_SALE_GLOBAL.value);
+  MARKET_PRICE_MY.value= copyLastElement(price);
 })
 
 

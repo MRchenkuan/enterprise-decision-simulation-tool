@@ -2,7 +2,7 @@ import { ref, watchEffect } from 'vue';
 export function PowerRef(key, obj){
   // return ref(obj)
   const target = retrieveValue(key);
-  let result = target ? ref(target):ref(obj)
+  let result = (target !== undefined && target !== null) ? ref(target):ref(obj)
   watchEffect(()=>{
     storeValue(key, result.value)
   })

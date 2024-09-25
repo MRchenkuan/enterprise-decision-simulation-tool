@@ -34,6 +34,10 @@ const zhedie = ref(false);
           <el-text class="title" size="small">预计利润：</el-text>
           <el-text size="small" :class="colorClass(totalProfit)">{{ formatNumberWithCommas(totalProfit) }}</el-text>
         </div>
+        <div class="line">
+          <el-text class="title" size="small">ROI：</el-text>
+          <el-text size="small" :class="colorClass(totalProfit)">{{ (100*totalProfit/totalInvest).toFixed(2) }}%</el-text>
+        </div>
       </div>
       <div class="zhedie toollet" @click="zhedie=!zhedie">
         <el-icon style="color: #909399;font-size: 16px;"><DCaret /></el-icon>
@@ -212,6 +216,7 @@ const zhedie = ref(false);
   .line .title{
     width: 80px;
     font-weight: 900;
+    text-align: right;
   }
 
   .good{

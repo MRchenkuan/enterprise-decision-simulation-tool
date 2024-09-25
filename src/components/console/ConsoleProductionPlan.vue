@@ -33,6 +33,7 @@ import {
   MY_PRICES,
   REQUIREMENT_NET,
   MARKET_REQUIREMENT,
+  MARKET_SALE,
   totalProfit,
   PRODUCTION_PLAN, laborCount, machineCount,COST_PRODUCE, TRANSPORTATION_COST_DYNAMIC} from '../../globalState';
 import { PowerRef } from '../../enhanceRef';
@@ -95,7 +96,7 @@ const mechineSum = ref([])
 const productChoice = PowerRef('productChoice',['A','B','C','D'])
 const mlrate = ref({})
 const toSumArr = ref([])
-const productCount = ref({
+const productCount = PowerRef('productCount',{
   A:1,
   B:1,
   C:1,
@@ -336,7 +337,7 @@ function _byRequire(type){
     let oneAvalid = false
     Object.keys(targetPlan).forEach(key=>{
       // 排除掉未选的key
-      if(!productChoice.value.includes(key)) return;
+      if(produceByMarket && !productChoice.value.includes(key)) return;
       //迭代
       targetPlan[key].forEach((it, i)=>{
         const dPlan = cloneDeep(targetPlan);
@@ -495,7 +496,7 @@ function byRequirePlan(){
           <el-text size="small">产品D</el-text>
           <power-input type="number" controls controls-position="right" :step=100 v-model="productCount.D" size="small" class="input" />
         </div>
-        <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequirePlan">开始排班</el-button>
+        <el-button type="primary" size="small" :disabled="!btnByMax" @click="byRequirePlan">按数量生产</el-button>
       </div>
 
     </template>
