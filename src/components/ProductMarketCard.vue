@@ -12,6 +12,17 @@ const props = defineProps({
       D:[]
     }
   },
+  diff: {
+    type:Object,
+    default:{
+      A:[],
+      B:[],
+      C:[],
+      D:[]
+    }
+  },
+  diffextra:Array,
+  diffunit:String,
   readonly:Boolean,
   unit:String,
   colored:{
@@ -122,9 +133,16 @@ function colorClass2(v){
       <el-text class="linetitle" size="small">产品{{ line }}</el-text>
       <template v-for="(cell,cell_idx) in normalConfig[line]" :key="cell_idx">
         <div class="cell4" v-if="cell_idx < 4">
-          <el-text v-if="readonly" 
-            size="small" 
-            :class="colorClass(cell)">{{ roundPercent(cell) }}</el-text>
+          <template v-if="readonly">
+            <el-text 
+              size="small" 
+              :class="colorClass(cell)">
+              {{ roundPercent(cell) }}
+            </el-text>
+            <el-text v-if="diff[line][cell_idx]" class="diff_tips" size="small" :type="diff[line][cell_idx]>0?'success':'danger'">
+              {{ diff[line][cell_idx]>0?"↑":"↓" }} {{ diff[line][cell_idx] }}{{ diffunit }}
+            </el-text>
+          </template>
           <power-input v-else 
             :disabled="disabled" 
             :places="places" 
@@ -156,6 +174,9 @@ function colorClass2(v){
         </div>
       <div v-else-if="extra" class="cell4">
         <el-text size="small" :class="colorClass2(extra[line_idx])">{{ roundPercent(extra[line_idx]) }}</el-text>
+        <el-text v-if="diffextra && diffextra[line_idx]" class="diff_tips" size="small" :type="diffextra[line_idx]>0?'success':'danger'">
+          {{ diffextra[line_idx]>0?"↑":"↓" }}{{ diffextra[line_idx] }}
+        </el-text>
       </div>
     </div>
   </div>
@@ -163,6 +184,14 @@ function colorClass2(v){
 </template>
 
 <style scoped>
+.diff_tips{
+  position: absolute;
+  right: -5px;
+  top: -8px;
+  z-index: 99999;
+  transform: scale(0.75);
+  font-weight: normal;
+}
 .frame{
   /* background: #eeeeee; */
   font-weight: 900;
@@ -202,6 +231,7 @@ function colorClass2(v){
 }
 
 .line .cell4{
+  position: relative;
   border: 1px solid #eee;
   width: 25%;
   box-sizing: border-box;

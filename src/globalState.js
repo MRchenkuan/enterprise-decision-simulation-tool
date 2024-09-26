@@ -106,6 +106,21 @@ export const MARKET_PRICE_MY = PowerRef('MARKET_PRICE_MY',{
   C:[0,0,0,0],
   D:[0,0,0,0],
 })
+//我的广告投入
+export const INVEST_ADV = PowerRef('INVEST_ADV',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
+
+//我的促销投入
+export const INVEST_PROMT = PowerRef('INVEST_PROMT',{
+  A:[0,0,0,0],
+  B:[0,0,0,0],
+  C:[0,0,0,0],
+  D:[0,0,0,0],
+})
 
 //市场总销量
 export const MARKET_SALE_GLOBAL = PowerRef('MARKET_SALE_GLOBAL',{
@@ -297,7 +312,7 @@ watchEffect(()=>{
 })
 
 watchEffect(()=>{
-  const { marketShare, saleCount, requirementCount, orderCount,storeCount,price } = TIME_SEQ_DATA_LIST.value; 
+  const { marketShare, saleCount, requirementCount, orderCount,storeCount,price,prmtInvest,advInvest } = TIME_SEQ_DATA_LIST.value; 
   const myOrder = copyLastElement(orderCount)
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
@@ -311,6 +326,9 @@ watchEffect(()=>{
   MARKET_SALE_GLOBAL.value= divideMatrix(MARKET_SALE.value, copyLastElement(marketShare));
   MARKET_POWER_MY.value= divideMatrix(myRequirement, MARKET_SALE_GLOBAL.value);
   MARKET_PRICE_MY.value= copyLastElement(price);
+  INVEST_ADV.value= copyLastElement(advInvest);
+  INVEST_PROMT.value= copyLastElement(prmtInvest);
+
 })
 
 

@@ -395,9 +395,9 @@ export function colorClass(v){
   }
 }
 
-export function copyLastElement(data){
+export function copyLastElement(data, offset=1){
   if(data && data.length>0){
-    return JSON.parse(JSON.stringify(data[data.length-1]))
+    return JSON.parse(JSON.stringify(data[data.length-offset]))
   } else {
     return {}
   }
