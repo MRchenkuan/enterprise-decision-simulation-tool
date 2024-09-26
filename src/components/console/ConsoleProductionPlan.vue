@@ -78,7 +78,7 @@ const mechineRequire = ref(0)
 const produceByMarket = PowerRef('produceByMarket',true);
 
 // 需求膨胀系数
-const expansion = ref(1.1)
+const expansion = PowerRef('expansion',1.1)
 
 function calcLabor(p, plan_arr){
   return plan_arr.map((count, id)=>{

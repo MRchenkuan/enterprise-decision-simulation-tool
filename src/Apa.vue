@@ -89,15 +89,14 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <el-text class="title" type="success"><el-icon><List /></el-icon> 当期销售情况</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">我在市场上的库存</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_STORE_COUNT" colored="bad" colored2="info" :extra="sumRows(Object.values(MARKET_STORE_COUNT))"/>
-            <el-divider content-position="left"><el-text size="small">市场对我的订货</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_ORDER" colored="good" colored2="info" :extra="sumRows(Object.values(MARKET_ORDER))"/>
             <el-divider content-position="left"><el-text size="small">上期我的销量</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_SALE" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_SALE))"/>
             <el-divider content-position="left"><el-text size="small">上期市场总销量</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_SALE_GLOBAL" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_SALE_GLOBAL))"/>
-            
+            <el-divider content-position="left"><el-text size="small">我在市场上的库存</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_STORE_COUNT" colored="bad" colored2="info" :extra="sumRows(Object.values(MARKET_STORE_COUNT))"/>
+            <el-divider content-position="left"><el-text size="small">市场对我的订货</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_ORDER" colored="good" colored2="info" :extra="sumRows(Object.values(MARKET_ORDER))"/>                       
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -107,9 +106,7 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <el-text class="title"><el-icon><List /></el-icon> 竞争力相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">上期我的价格</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_PRICE_MY" colored="auto"/>
-            <el-divider content-position="left"><el-text size="small">上期我的市场竞争力(我的商品需求占全市场的比例)</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small" type="danger">上期我的市场竞争力(我的商品需求占全市场的比例)</el-text></el-divider>
             <product-market-card readonly :places=2 :config="MARKET_POWER_MY" colored="auto" unit="%"/>
             <el-divider content-position="left"><el-text size="small">上期我的市场份额</el-text></el-divider>
             <product-market-card readonly :places=2 :config="MARKET_SHARE_MY" colored="auto" unit="%"/>
@@ -117,6 +114,8 @@ import { PowerRef } from './enhanceRef';
             <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
             <el-divider content-position="left"><el-text size="small">本期市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
+            <el-divider content-position="left"><el-text size="small">上期我的价格</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_PRICE_MY" colored="auto"/>
           </el-tab-pane>
         </el-tabs>
       </div>
