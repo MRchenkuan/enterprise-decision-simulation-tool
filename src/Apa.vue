@@ -112,12 +112,14 @@ import { PowerRef } from './enhanceRef';
             </template>
             <el-divider content-position="left"><el-text size="small">上期我的销量</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_SALE" :diff="getDiff(MARKET_SALE, copyLastElement(TIME_SEQ_DATA_LIST.saleCount, 2))" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_SALE))"/>
+            <el-divider content-position="left"><el-text size="small">本期可销售数量（产量+市场存货）</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="plusMatrix(TRANSPORTATION_PLAN, MARKET_STORE_COUNT)" :diff="getDiff(plusMatrix(TRANSPORTATION_PLAN, MARKET_STORE_COUNT), MARKET_SALE)" colored="good" colored2="info" :extra="sumRows(Object.values(plusMatrix(TRANSPORTATION_PLAN, MARKET_STORE_COUNT)))"/>    
             <el-divider content-position="left"><el-text size="small">上期市场总销量</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_SALE_GLOBAL" :diff="getMarketSaleDiff()" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_SALE_GLOBAL))"/>
             <el-divider content-position="left"><el-text size="small">我在市场上的库存</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_STORE_COUNT" :diff="getDiff(MARKET_STORE_COUNT, copyLastElement(TIME_SEQ_DATA_LIST.storeCount, 2))" colored="bad" colored2="info" :extra="sumRows(Object.values(MARKET_STORE_COUNT))"/>
             <el-divider content-position="left"><el-text size="small">市场对我的订货</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_ORDER" :diff="getDiff(MARKET_ORDER, copyLastElement(TIME_SEQ_DATA_LIST.orderCount, 2))" colored="good" colored2="info" :extra="sumRows(Object.values(MARKET_ORDER))"/>                       
+            <product-market-card readonly :places=0 :config="MARKET_ORDER" :diff="getDiff(MARKET_ORDER, copyLastElement(TIME_SEQ_DATA_LIST.orderCount, 2))" colored="good" colored2="info" :extra="sumRows(Object.values(MARKET_ORDER))"/>                                          
           </el-tab-pane>
         </el-tabs>
       </div>
