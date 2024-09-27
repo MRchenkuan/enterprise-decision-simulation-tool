@@ -137,9 +137,9 @@ import { PowerRef } from './enhanceRef';
             <product-market-card readonly :places=2 :config="MARKET_POWER_MY" diffunit="%" :diff="getMarketPowerDiff()" colored="auto" unit="%"/>
             <el-divider content-position="left"><el-text size="small">上期我的市场份额</el-text></el-divider>
             <product-market-card readonly :places=2 :config="MARKET_SHARE_MY" diffunit="%" :diff="getDiff(MARKET_SHARE_MY, copyLastElement(TIME_SEQ_DATA_LIST.marketShare, 2), 100)" colored="auto" unit="%"/>
-            <el-divider content-position="left"><el-text size="small">上期市场对我需求</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">市场对我需求（上期）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" :diff="getDiff(MARKET_REQUIREMENT, copyLastElement(TIME_SEQ_DATA_LIST.requirementCount, 2))" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
-            <el-divider content-position="left"><el-text size="small">本期市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" :diff="getDiff(REQUIREMENT_NET, copyLastElement(TIME_SEQ_DATA_LIST.requirementCount, 2))" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             
           </el-tab-pane>
