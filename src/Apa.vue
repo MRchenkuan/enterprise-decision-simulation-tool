@@ -87,7 +87,7 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <div class="tabtag">
                 <el-text><el-icon><StarFilled/></el-icon> 全局配置</el-text>
-                <el-text type="success" size="small">(首次开始时配置一次)</el-text>
+                <el-text type="success" size="danger">(首次开始时配置一次)</el-text>
               </div>
             </template>
             <el-alert title="一次性配置，根据比赛界信息配置完毕即可" description="" type="warning" :closable="false" show-icon />
@@ -108,8 +108,10 @@ import { PowerRef } from './enhanceRef';
           </el-tab-pane>
           <el-tab-pane name="market">
             <template #label>
-              <el-text class="title" type="success"><el-icon><List /></el-icon> 当期销售情况</el-text>
+              <el-text class="title" type="success"><el-icon><Shop /></el-icon> 当期销售情况</el-text>
             </template>
+            <el-divider content-position="left"><el-text size="small">上期我的价格</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="MARKET_PRICE_MY" :diff="getDiff(MARKET_PRICE_MY, copyLastElement(TIME_SEQ_DATA_LIST.price, 2))" colored="auto"/>
             <el-divider content-position="left"><el-text size="small">上期市场总销量</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_SALE_GLOBAL" :diff="getMarketSaleDiff()" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_SALE_GLOBAL))"/>
             <el-divider content-position="left"><el-text size="small">上期我的销量</el-text></el-divider>
@@ -127,15 +129,17 @@ import { PowerRef } from './enhanceRef';
         <el-tabs v-model="competitionBoardActive" type="border-card" class="card">
           <el-tab-pane name="competition">
             <template #label>
-              <el-text class="title"><el-icon><List /></el-icon> 竞争力相关</el-text>
+              <el-text class="title" type="success"><el-icon><ChromeFilled /></el-icon> 竞争力相关</el-text>
             </template>
+            <el-divider content-position="left"><el-text size="small">上期我的广促投入（单位：万）</el-text></el-divider>
+            <product-market-card readonly :places=0 :config="processMatrix(plusMatrix(INVEST_ADV, INVEST_PROMT), it=>it*0.0001)" diffunit="万" :diff="getAdvPrmtDiff()" colored="auto"/>
             <el-divider content-position="left"><el-text size="small">上期我的市场份额</el-text></el-divider>
             <product-market-card readonly :places=2 :config="MARKET_SHARE_MY" diffunit="%" :diff="getDiff(MARKET_SHARE_MY, copyLastElement(TIME_SEQ_DATA_LIST.marketShare, 2), 100)" colored="auto" unit="%"/>
             <el-divider content-position="left"><el-text size="small" type="danger">上期我的市场竞争力(我的商品需求占全市场的比例)</el-text></el-divider>
             <product-market-card readonly :places=2 :config="MARKET_POWER_MY" diffunit="%" :diff="getMarketPowerDiff()" colored="auto" unit="%"/>
             <el-divider content-position="left"><el-text size="small">市场对我需求（上期）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="MARKET_REQUIREMENT" :diff="getDiff(MARKET_REQUIREMENT, copyLastElement(TIME_SEQ_DATA_LIST.requirementCount, 2))" colored="auto" colored2="info" :extra="sumRows(Object.values(MARKET_REQUIREMENT))"/>
-            <el-divider content-position="left"><el-text size="small">市场对我的净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
+            <el-divider content-position="left"><el-text size="small">本期净需求（扣掉市场中没卖掉的库存）</el-text></el-divider>
             <product-market-card readonly :places=0 :config="REQUIREMENT_NET" :diff="getDiff(REQUIREMENT_NET, copyLastElement(TIME_SEQ_DATA_LIST.requirementCount, 2))" colored="auto" colored2="info" :extra="sumRows(Object.values(REQUIREMENT_NET))"/>
             
           </el-tab-pane>
@@ -147,10 +151,6 @@ import { PowerRef } from './enhanceRef';
             <template #label>
               <el-text class="title"><el-icon><List /></el-icon> 成本相关</el-text>
             </template>
-            <el-divider content-position="left"><el-text size="small">上期我的价格</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="MARKET_PRICE_MY" :diff="getDiff(MARKET_PRICE_MY, copyLastElement(TIME_SEQ_DATA_LIST.price, 2))" colored="auto"/>
-            <el-divider content-position="left"><el-text size="small">上期我的广促投入（单位：万）</el-text></el-divider>
-            <product-market-card readonly :places=0 :config="processMatrix(plusMatrix(INVEST_ADV, INVEST_PROMT), it=>it*0.0001)" diffunit="万" :diff="getAdvPrmtDiff()" colored="auto"/>
             <el-divider content-position="left"><el-text size="small">生产成本 </el-text></el-divider>
             <product-market-card type="produce" :extra="COST_PRODUCE_DYNAMIC" :places="0" colored2="bad" readonly :config="COST_PRODUCE"/>
             <el-divider content-position="left"><el-text size="small">物流成本衰减</el-text></el-divider>
@@ -158,7 +158,7 @@ import { PowerRef } from './enhanceRef';
           </el-tab-pane>
           <el-tab-pane name="profit">
             <template #label>
-              <el-text class="title" type="success"><el-icon><StarFilled /></el-icon> 利润相关</el-text>
+              <el-text class="title" type="success"><el-icon><WalletFilled /></el-icon> 利润相关</el-text>
             </template>
             <el-divider content-position="left"><el-text size="small">毛利率 </el-text></el-divider>
             <product-market-card unit="%" readonly colored="auto" :config="PROFIT_GROSS_RATE"/>

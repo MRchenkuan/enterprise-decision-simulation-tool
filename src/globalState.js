@@ -287,38 +287,27 @@ TIME_SEQ_DATA_LIST.value.IS_LOAD_WITH_FILE = false;
 // export const TIME_SEQ_DATA_LIST = ref({})
 
 
-
-const { marketShare, saleCount, requirementCount, orderCount, storeCount } = TIME_SEQ_DATA_LIST.value; 
-const myMarketKeep = copyLastElement(storeCount);
-
-
-watchEffect(()=>{
-  const _saleCount = copyLastElement(saleCount);
-  const _marketShare = copyLastElement(marketShare);
-  
-  try{
-
-    MARKET_CAPACITY.value = divideMatrix(_saleCount, _marketShare);
-    MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
-    MARKET_SHARE_MY.value = _marketShare;
-  }catch(e){
-    debugger
-  }
-})
-
-watchEffect(()=>{
-  checkMapStruct(orderCount) && (PERIOD_DATA.value.myOrder = minusMatrix(copyLastElement(orderCount), myMarketKeep))
-  checkMapStruct(saleCount) && (PERIOD_DATA.value.mySaleCount = copyLastElement(saleCount));
-})
-
 watchEffect(()=>{
   const { marketShare, saleCount, requirementCount, orderCount,storeCount,price,prmtInvest,advInvest } = TIME_SEQ_DATA_LIST.value; 
+
+  const _saleCount = copyLastElement(saleCount);
+  const _marketShare = copyLastElement(marketShare);
+  const myMarketKeep = copyLastElement(storeCount);
+
+
   const myOrder = copyLastElement(orderCount)
   const myPureOder = minusMatrix(myOrder, myMarketKeep);
   const myRequirement = copyLastElement(requirementCount)
   const reqNet = plusMatrix(myPureOder,myRequirement);
   checkMapStruct(reqNet) && (REQUIREMENT_NET.value = reqNet);
   checkMapStruct(myRequirement) && (MARKET_REQUIREMENT.value = myRequirement);
+
+  checkMapStruct(orderCount) && (PERIOD_DATA.value.myOrder = minusMatrix(myOrder, myMarketKeep))
+  checkMapStruct(saleCount) && (PERIOD_DATA.value.mySaleCount = _saleCount);
+
+  MARKET_CAPACITY.value = divideMatrix(_saleCount, _marketShare);
+  MARKET_SCALE.value = checkNumbers(timesMatrix(MY_PRICES.value, MARKET_CAPACITY.value),2);
+  MARKET_SHARE_MY.value = _marketShare;
 
   MARKET_STORE_COUNT.value= copyLastElement(storeCount);
   MARKET_ORDER.value= myOrder;
@@ -328,6 +317,7 @@ watchEffect(()=>{
   MARKET_PRICE_MY.value= copyLastElement(price);
   INVEST_ADV.value= copyLastElement(advInvest);
   INVEST_PROMT.value= copyLastElement(prmtInvest);
+  
 
 })
 
