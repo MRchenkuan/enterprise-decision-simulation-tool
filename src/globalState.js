@@ -330,18 +330,24 @@ watchEffect(()=>{
     C: produceCostCalc(C.value, PRODUCTION_PLAN.value.C),
     D: produceCostCalc(D.value, PRODUCTION_PLAN.value.D),
   }
-  
+
+  let costMatrix = {};
+  Object.keys(COST_PRODUCE.value).map(key=>{
+    const p = COST_PRODUCE.value[key][4];
+    costMatrix[key] = [p,p,p,p]
+  })
+
   // 计算平均成本
   COST_PRODUCE_DYNAMIC.value = Object.values(COST_PRODUCE.value).map(it=>it[4]);
 
   // 根据价格 - 平均成本算毛利润
   PROFIT_GROSS.value=minusMatrixArray(MY_PRICES.value, COST_PRODUCE_DYNAMIC.value, true)
   // 毛利率
-  PROFIT_GROSS_RATE.value = divideMatrix(PROFIT_GROSS.value, COST_PRODUCE.value)
+  PROFIT_GROSS_RATE.value = divideMatrix(PROFIT_GROSS.value, costMatrix)
   // 净利润
   PROFIT_NET.value = minusMatrix(PROFIT_GROSS.value, TRANSPORTATION_COST_DYNAMIC.value)
   // 净利率
-  PROFIT_NET_RATE.value = divideMatrix(PROFIT_NET.value, COST_PRODUCE.value)
+  PROFIT_NET_RATE.value = divideMatrix(PROFIT_NET.value, costMatrix)
 })
 
 watchEffect(()=>{
